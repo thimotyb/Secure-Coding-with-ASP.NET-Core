@@ -14,7 +14,7 @@ dotnet add package Microsoft.AspNetCore.Identity.UI
 dotnet add package Microsoft.EntityFrameworkCore.Sqlite
 dotnet add package Microsoft.EntityFrameworkCore.Tools
 
-# Try first run without login
+# Try first run without login, try go in paths /Survey ; /admin, they are unprotected
 dotnet run
 
 # Add Identity Core login
