@@ -1,5 +1,11 @@
+sudo apt-get update
+sudo apt install dotnet-sdk-8.0
+
+cd .NetCore8/Modules/3/start/WebApplication1
+
 dotnet add package Microsoft.VisualStudio.Web.CodeGeneration.Design
 dotnet tool install -g dotnet-aspnet-codegenerator
+export PATH="$PATH:/home/gitpod/.dotnet/tools"
 dotnet add package Microsoft.DotNet.Scaffolding.Shared
 dotnet add package Microsoft.VisualStudio.Web.CodeGeneration.Design
 dotnet add package Microsoft.EntityFrameworkCore.Design
@@ -8,16 +14,21 @@ dotnet add package Microsoft.AspNetCore.Identity.UI
 dotnet add package Microsoft.EntityFrameworkCore.Sqlite
 dotnet add package Microsoft.EntityFrameworkCore.Tools
 
+# Try first run without login
+dotnet run
 
+# Add Identity Core login
 dotnet aspnet-codegenerator identity --listFiles --no-build
 
 dotnet aspnet-codegenerator identity -dc Globomantics.Survey.Data.IdentityDbContext --files "Account.Register;Account.Login;Account.Logout" --databaseProvider sqlite
 
 
-dotnet tool install --global dotnet-ef --version 8.0.0-rc.2.23480.1
+dotnet tool install --global dotnet-ef --version 8.0.3
 dotnet-ef migrations add Identity --context IdentityDbContext
 dotnet-ef database update --context IdentityDbContext
 
+# Try now with new login
+dotnet run
 
 dotnet aspnet-codegenerator identity -dc Globomantics.Survey.Data.IdentityDbContext --files "Account.RegisterConfirmation" --databaseProvider sqlite
 
