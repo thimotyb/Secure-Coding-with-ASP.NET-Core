@@ -17,7 +17,9 @@ dotnet add package Microsoft.EntityFrameworkCore.Tools
 # Try first run without login, try go in paths /Survey ; /admin, they are unprotected
 dotnet run
 
+#############################
 # Add Identity Core login
+###########################
 dotnet aspnet-codegenerator identity --listFiles --no-build
 
 dotnet aspnet-codegenerator identity -dc Globomantics.Survey.Data.IdentityDbContext --files "Account.Register;Account.Login;Account.Logout" --databaseProvider sqlite
@@ -52,6 +54,30 @@ dotnet-ef database update --context IdentityDbContext
 
 # Try now with new login
 dotnet run
+
+#################
+# Password Strength
+################
+# In Program.cs line 22
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.Password.RequiredLength = 12;
+    options.Password.RequireDigit = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Lockout.MaxFailedAccessAttempts = 5;
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10);
+});
+
+# In Areas>Identity>Pages>Account>Register.cshtml.cs Line 86
+# Change max 128 and min length 12
+
+# dotnet run and check validation in register new account / password
+
+
+
+
 
 dotnet aspnet-codegenerator identity -dc Globomantics.Survey.Data.IdentityDbContext --files "Account.RegisterConfirmation" --databaseProvider sqlite
 
