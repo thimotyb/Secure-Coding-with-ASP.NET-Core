@@ -1,3 +1,5 @@
+# extension: free-csharp-vscode
+# https://www.gitpod.io/docs/introduction/languages/dotnet#pthe-c-extensionp
 sudo apt-get update
 sudo apt install dotnet-sdk-8.0
 
@@ -24,7 +26,6 @@ dotnet aspnet-codegenerator identity --listFiles --no-build
 
 dotnet aspnet-codegenerator identity -dc Globomantics.Survey.Data.IdentityDbContext --files "Account.Register;Account.Login;Account.Logout" --databaseProvider sqlite
 
-####################
 # Add in Program.cs
 builder.Services.AddDbContext<IdentityDbContext>(
     dbContextoptions => dbContextoptions.UseSqlite(builder.Configuration["ConnectionStrings:GloboIdentityDbConnectionString"]));
@@ -75,11 +76,30 @@ builder.Services.Configure<IdentityOptions>(options =>
 
 # dotnet run and check validation in register new account / password
 
+###########################
+# Account Confirmation
+###########################
 
+# Program.cs Line 17 add back SignIn Required Confirmed Account
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddEntityFrameworkStores<IdentityDbContext>();
+# Run program, register new user, use link to confirm address (devel mode). let's create an email sender that logs in console the confirmation link
+# Add Services dir, create EmailSender.cs file (copy it from .NetCore6/3/end)
 
-
-
+# Add register page via scaffolding
 dotnet aspnet-codegenerator identity -dc Globomantics.Survey.Data.IdentityDbContext --files "Account.RegisterConfirmation" --databaseProvider sqlite
+
+# In Areas>Identity>Pages>Account>RegisterConfirmation.cshtml.cs Line 63 set ConfirmationLink to false
+# In Program.cs add sender class (line 31), add using statements 
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Globomantics.Survey.Services;
+builder.Services.AddTransient<IEmailSender, EmailSender>();
+
+# Run, reregister, copy link from console and paste in browser (replace &amp; to & at beginning and end)
+
+##############################à
+# Password Reset ASVS 2.1.5
+#################################
 
 dotnet aspnet-codegenerator identity -dc Globomantics.Survey.Data.IdentityDbContext --files "Account.ResetPassword;Account.ResetPasswordConfirmation" --databaseProvider sqlite
 
