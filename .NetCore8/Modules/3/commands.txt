@@ -147,4 +147,14 @@ dotnet aspnet-codegenerator identity -dc Globomantics.Survey.Data.IdentityDbCont
     <script type="text/javascript" src="~/lib/qrcode.js"></script>
     <script type="text/javascript" src="~/js/qr.js"></script>
 
+##############################
+# Rate Limiting Logins
+################################
+# In Programcs go to options.Password and add
+    options.Lockout.MaxFailedAccessAttempts = 5;
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10);
+# In Login.cshtml.cs line 114 se lockoutOnFailure: true
+# Try to fail login 5 times
+
+
 
