@@ -1,5 +1,23 @@
 # extension: free-csharp-vscode
 # https://www.gitpod.io/docs/introduction/languages/dotnet#pthe-c-extensionp
+###############################
+# .gitpod.yaml
+image: gitpod/workspace-dotnet
+
+tasks:
+  - name: Restore & Build
+    init: |
+      dotnet dev-certs https 
+      dotnet restore
+      dotnet build
+  - name: Run
+    command: dotnet run
+
+vscode:
+  extensions:
+    - muhammad-sammy.csharp
+##############################
+
 sudo apt-get update
 sudo apt install dotnet-sdk-8.0
 
