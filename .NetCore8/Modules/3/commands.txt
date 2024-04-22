@@ -17,6 +17,9 @@ vscode:
   extensions:
     - muhammad-sammy.csharp
 ##############################
+# dotnet new globaljson
+# insert 8.0.103
+#############################à
 
 
 ###################### Ubuntu 20.04
