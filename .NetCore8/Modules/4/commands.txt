@@ -86,6 +86,6 @@ dotnet aspnet-codegenerator identity -dc Globomantics.Survey.Data.IdentityDbCont
             Secure = true,
         });
 
-# run, logout/login, examine the cookie
+# run, logout/login (pass to /admin page, then go back manually to / page to have the logout), examine the cookie
 
 
