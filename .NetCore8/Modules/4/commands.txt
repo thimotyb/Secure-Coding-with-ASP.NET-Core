@@ -1,1 +1,91 @@
+##############
+## COOKIES ASVS 3.4.0
+#############
+# Add memCache in Program.cs + sessions
+#builder.Services.AddTransient<IEmailSender, EmailSender>();
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession();
+.
+.
+.
+app.UseAuthorization();
+app.UseSession();
+
+# In Areas>Admin>Controllers>HomeController.cs add a dummy session element
+public class HomeController : Controller
+    {
+        public IActionResult Index()
+        {
+            HttpContext.Session.SetString("Temp", "LoggedIn");
+            return View();
+        }
+    }
+
+# Run app and  open Develtools and look at Application > cookies, go to /admin page to add to session, look at session cookie, comment on options
+# Back in Program.cs add cookie options
+builder.Services.AddSession(options =>
+{
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SameSite = SameSiteMode.Strict;
+    options.Cookie.Path = "/";
+    options.Cookie.Name = "__Host-Session";
+    options.Cookie.MaxAge = TimeSpan.FromHours(1);
+    options.IdleTimeout = TimeSpan.FromMinutes(20);
+});
+# Rerun and recheck __Host-Session cookie in devtools
+# Apply also to cookies for identities in Program.cs
+builder.Services.ConfigureApplicationCookie(options => 
+{
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SameSite = SameSiteMode.Strict;
+    options.Cookie.Path = "/";
+    options.Cookie.Name = "__Host-Identity";
+    options.Cookie.MaxAge = TimeSpan.FromHours(12);
+    options.ExpireTimeSpan = TimeSpan.FromHours(12);
+});
+
+##############
+# STEPUP AUTHENTICATION
+##############
+# Create a new page for stepup auth
 dotnet aspnet-codegenerator identity -dc Globomantics.Survey.Data.IdentityDbContext --files "Account.LoginWith2fa" --databaseProvider sqlite
+# Create Attributes folder and EnforceStepUpAttribute.cs
+
+################
+# LOGGING OUT
+##################
+# In Logout.cshtml.cs clean cookies at logout
+  _logger.LogInformation("User logged out.");
+
+  HttpContext.Session.Clear();
+  DeleteAllCookies();
+    Response.Cookies.Delete("__Host-Session", new CookieOptions()
+        {
+            Secure = true,
+        });
+
+ private void DeleteAllCookies()
+        {
+            foreach (var cookie in Request.Cookies.Keys)
+            {
+                Response.Cookies.Delete(cookie, new CookieOptions()
+                {
+                    Secure = true,
+                });
+            }
+        }
+
+# Delete the session cookie also ath the Login.cshtml.cs, line 99, so we are sure that a new cookie can be created
+   // Clear the existing external cookie to ensure a clean login process
+    await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+
+    Response.Cookies.Delete("__Host-Session", new CookieOptions()
+        {
+            Secure = true,
+        });
+
+# run, logout/login, examine the cookie
+
+
