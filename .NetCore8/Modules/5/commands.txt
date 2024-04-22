@@ -1,4 +1,89 @@
 ###############
 # ASVS Chapt 4, Access Control
+# RBAC
 ##############
+# Limit access to admin page
+# Identity > Data > IdentityDbContext.cs OnModelCreating
+
+protected override void OnModelCreating(ModelBuilder builder)
+    {
+        base.OnModelCreating(builder);
+        
+        IdentityRole<string> adminRole = new IdentityRole() {
+                Id = Guid.NewGuid().ToString(), 
+                Name = "Administrator", 
+                ConcurrencyStamp = "1", 
+                NormalizedName = "ADMINISTRATOR"
+                };
+        builder.Entity<IdentityRole>().HasData(adminRole); 
+
+        IdentityUser roleUser = CreateUser("Admin@globomantics.com"); 
+        builder.Entity<IdentityUser>().HasData(roleUser); 
+        
+        builder.Entity<IdentityUserRole<string>>().HasData(
+            new IdentityUserRole<string>() { 
+                UserId = roleUser.Id, 
+                RoleId = adminRole.Id
+                }
+        );
+
+        IdentityUser claimUser = CreateUser("SuperAdmin@globomantics.com"); 
+        builder.Entity<IdentityUser>().HasData(claimUser); 
+
+        builder.Entity<IdentityUserClaim<string>>().HasData(
+            new IdentityUserClaim<string>() { 
+                UserId = claimUser.Id,
+                Id = 1,
+                ClaimType = "IsManager", 
+                ClaimValue = "true"
+                }
+        );
+
+        builder.Entity<IdentityUserRole<string>>().HasData(
+            new IdentityUserRole<string>() { 
+                UserId = claimUser.Id, 
+                RoleId = adminRole.Id
+                }
+        );
+
+    }
+
+    private IdentityUser CreateUser(string email)
+    {
+        IdentityUser user = new IdentityUser()  
+        {  
+            Id = Guid.NewGuid().ToString(),  
+            UserName = email,  
+            NormalizedUserName = email.ToUpper(),
+            Email = email,
+            NormalizedEmail = email.ToUpper(),
+            EmailConfirmed = true
+        };  
+
+        PasswordHasher<IdentityUser> passwordHasher = new PasswordHasher<IdentityUser>();  
+        user.PasswordHash = passwordHasher.HashPassword(user, email);
+        return user;
+    }
+# Create an EF migration for this additional seed data and apply it
+dotnet ef migrations add CreateUsersRole --context IdentityDbContext
+dotnet-ef database update --context IdentityDbContext
+#########################
+# Add  Areas>Admin>Controller> add UserController.cs (take it from 5/end)
+#  Add Areas>Admin>ViewModels UserDetailsViewModel.cs (take it from 5/end)
+# Add Areas>Admin>Views all the User subfolder (take it from 5/end)
+# in Areas>Admin>Views > _ViewImports.cshtml add: (take it from 5/end)
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService
+# In Program.cs activate Roles and RolesManager
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
+    .AddRoleManager<RoleManager<IdentityRole>>().AddEntityFrameworkStores<IdentityDbContext>();
+
+# Run and go manually in address bar to /admin/user (the new controller that was created)
+# try with test4@test.it, access denied, logout and login as Admin@globomantics.com (password=emai) (reset password procedure with reset link)
+
+
+
+
+
 
