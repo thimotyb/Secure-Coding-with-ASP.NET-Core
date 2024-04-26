@@ -80,7 +80,43 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddRoleManager<RoleManager<IdentityRole>>().AddEntityFrameworkStores<IdentityDbContext>();
 
 # Run and go manually in address bar to /admin/user (the new controller that was created)
-# try with test4@test.it, access denied, logout and login as Admin@globomantics.com (password=emai) (reset password procedure with reset link)
+# try with test4@test.it, access denied, logout and login as Admin@globomantics.com (password=emai) 
+# Add Authorization to Admin to other Controllers in the Areas>Admin>Views
+[Authorize(Roles = "Administrator")]
+
+######
+# CLAIMS BASED ACCESS CONTROL
+######
+# IdentityDbContext.cs, line 36, SuperAdmin user info and claims were added
+# Program.cs, add Policy to require Claim
+builder.Services.AddAuthorization(options =>
+{
+   options.AddPolicy("SuperAdmin", 
+    policy => policy.RequireClaim("IsManager", "true")
+    );
+});
+
+# IN Areas>Admin>UserController.cs, add check for this claim
+        [Authorize(Policy = "SuperAdmin")]
+        [HttpPost("Admin/User/SetAdmin/{Id:guid}")]
+        public async Task<IActionResult> SetAdmin(Guid id)
+
+# In Admin>ViewModels>UserDetailViewModels we add isAdmin flag to the ViewModel
+public UserDetailsViewModel(IdentityUser user, bool isAdmin)
+        {
+            User = user;
+            IsAdmin = isAdmin;
+        }
+
+# In UserController.cs line 35 we check for AdminRole to set up the ViewModel
+# In Areas>Admin>Views>User>ViewUser.cshtml we set up the GUI buttons to set/unset admin
+
+###################
+# CLIENT SIDE ACCESS VALIDATION
+###################
+
+
+
 
 
 
