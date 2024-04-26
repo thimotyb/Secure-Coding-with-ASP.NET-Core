@@ -137,7 +137,13 @@ public UserDetailsViewModel(IdentityUser user, bool isAdmin)
 #                    </ul>
 #                    <partial name="_LoginPartial" />
 
-
+############
+# CSRF ANTI FORGERY TOKEN
+############
+# POST to /Admin/User/SetAdmin/{ID} is vulnerable to CSRF (can be used by a Cross-Site if client browser has an authenticated cookie)
+# In Program.cs add
+builder.Services.AddAntiforgery();
+# Show in dev viewer RequestVerificationToken in "Set To Admin" button, when logging as SuperAdmin in /admin/user page and picking a user
 
 
 
