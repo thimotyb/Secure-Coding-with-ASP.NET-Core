@@ -7,6 +7,7 @@ namespace Globomantics.Survey.Areas.Admin.Controllers
     {
         public IActionResult Index()
         {
+            HttpContext.Session.SetString("Temp", "LoggedIn");
             return View();
         }
     }

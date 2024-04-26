@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authorization
 
 namespace Globomantics.Survey.Areas.Admin.ViewModels
 {
