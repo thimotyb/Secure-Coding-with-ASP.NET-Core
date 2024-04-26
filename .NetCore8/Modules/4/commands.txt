@@ -52,6 +52,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 # Create a new page for stepup auth
 dotnet aspnet-codegenerator identity -dc Globomantics.Survey.Data.IdentityDbContext --files "Account.LoginWith2fa" --databaseProvider sqlite
 # Create Attributes folder and EnforceStepUpAttribute.cs
+# TODO: ADD CHECK2FS PAGES TO IMPLEMENT STEPUP WITH 2FA
 
 ################
 # LOGGING OUT
