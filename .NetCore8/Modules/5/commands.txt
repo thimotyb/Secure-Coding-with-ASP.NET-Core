@@ -1,0 +1,153 @@
+###############
+# ASVS Chapt 4, Access Control
+# RBAC
+##############
+# Limit access to admin page
+# Identity > Data > IdentityDbContext.cs OnModelCreating
+
+protected override void OnModelCreating(ModelBuilder builder)
+    {
+        base.OnModelCreating(builder);
+        
+        IdentityRole<string> adminRole = new IdentityRole() {
+                Id = Guid.NewGuid().ToString(), 
+                Name = "Administrator", 
+                ConcurrencyStamp = "1", 
+                NormalizedName = "ADMINISTRATOR"
+                };
+        builder.Entity<IdentityRole>().HasData(adminRole); 
+
+        IdentityUser roleUser = CreateUser("Admin@globomantics.com"); 
+        builder.Entity<IdentityUser>().HasData(roleUser); 
+        
+        builder.Entity<IdentityUserRole<string>>().HasData(
+            new IdentityUserRole<string>() { 
+                UserId = roleUser.Id, 
+                RoleId = adminRole.Id
+                }
+        );
+
+        IdentityUser claimUser = CreateUser("SuperAdmin@globomantics.com"); 
+        builder.Entity<IdentityUser>().HasData(claimUser); 
+
+        builder.Entity<IdentityUserClaim<string>>().HasData(
+            new IdentityUserClaim<string>() { 
+                UserId = claimUser.Id,
+                Id = 1,
+                ClaimType = "IsManager", 
+                ClaimValue = "true"
+                }
+        );
+
+        builder.Entity<IdentityUserRole<string>>().HasData(
+            new IdentityUserRole<string>() { 
+                UserId = claimUser.Id, 
+                RoleId = adminRole.Id
+                }
+        );
+
+    }
+
+    private IdentityUser CreateUser(string email)
+    {
+        IdentityUser user = new IdentityUser()  
+        {  
+            Id = Guid.NewGuid().ToString(),  
+            UserName = email,  
+            NormalizedUserName = email.ToUpper(),
+            Email = email,
+            NormalizedEmail = email.ToUpper(),
+            EmailConfirmed = true
+        };  
+
+        PasswordHasher<IdentityUser> passwordHasher = new PasswordHasher<IdentityUser>();  
+        user.PasswordHash = passwordHasher.HashPassword(user, email);
+        return user;
+    }
+# Create an EF migration for this additional seed data and apply it
+dotnet ef migrations add CreateUsersRole --context IdentityDbContext
+dotnet-ef database update --context IdentityDbContext
+#########################
+# Add  Areas>Admin>Controller> add UserController.cs (take it from 5/end)
+#  Add Areas>Admin>ViewModels UserDetailsViewModel.cs (take it from 5/end)
+# Add Areas>Admin>Views all the User subfolder (take it from 5/end)
+# in Areas>Admin>Views > _ViewImports.cshtml add: (take it from 5/end)
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService
+# In Program.cs activate Roles and RolesManager
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
+    .AddRoleManager<RoleManager<IdentityRole>>().AddEntityFrameworkStores<IdentityDbContext>();
+
+# Run and go manually in address bar to /admin/user (the new controller that was created)
+# try with test4@test.it, access denied, logout and login as Admin@globomantics.com (password=emai) 
+# Add Authorization to Admin to other Controllers in the Areas>Admin>Views
+[Authorize(Roles = "Administrator")]
+
+######
+# CLAIMS BASED ACCESS CONTROL
+######
+# IdentityDbContext.cs, line 36, SuperAdmin user info and claims were added
+# Program.cs, add Policy to require Claim
+builder.Services.AddAuthorization(options =>
+{
+   options.AddPolicy("SuperAdmin", 
+    policy => policy.RequireClaim("IsManager", "true")
+    );
+});
+
+# IN Areas>Admin>UserController.cs, add check for this claim
+        [Authorize(Policy = "SuperAdmin")]
+        [HttpPost("Admin/User/SetAdmin/{Id:guid}")]
+        public async Task<IActionResult> SetAdmin(Guid id)
+
+# In Admin>ViewModels>UserDetailViewModels we add isAdmin flag to the ViewModel
+public UserDetailsViewModel(IdentityUser user, bool isAdmin)
+        {
+            User = user;
+            IsAdmin = isAdmin;
+        }
+
+# In UserController.cs line 35 we check for AdminRole to set up the ViewModel
+# In Areas>Admin>Views>User>ViewUser.cshtml we set up the GUI buttons to set/unset admin
+
+# Run and test logging in as SuperAdmin@globomantics.com (email=pw), go manually to .../admin/user
+
+###################
+# CLIENT SIDE ACCESS VALIDATION
+###################
+# If we login as just Admin@globomantics.com we still see the Set/Unset buttons, we need to adjust UI to hide
+# Admin>Views>_ViewImports add 
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService
+# In ViewUser.cs we have added control to visualize buttons
+@if ((await AuthorizationService.AuthorizeAsync(User, "SuperAdmin")).Succeeded)
+
+# ADD MENU ITEM IN HOME IF YOU HAVE ADMIN ROLE
+# Views>Shared>_Layout.cshtml line 27-28
+# <li class="nav-item">
+#                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+#                        </li>
+                    @if (User.IsInRole("Administrator"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Admin">Admin</a>
+                        </li>
+                    }
+#                    </ul>
+#                    <partial name="_LoginPartial" />
+
+############
+# CSRF ANTI FORGERY TOKEN
+############
+# POST to /Admin/User/SetAdmin/{ID} is vulnerable to CSRF (can be used by a Cross-Site if client browser has an authenticated cookie)
+# In Program.cs add
+builder.Services.AddAntiforgery();
+# Show in dev viewer RequestVerificationToken in "Set To Admin" button, when logging as SuperAdmin in /admin/user page and picking a user
+
+
+
+
+
+
+

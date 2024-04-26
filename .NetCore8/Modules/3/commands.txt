@@ -17,6 +17,18 @@ vscode:
   extensions:
     - muhammad-sammy.csharp
 ##############################
+# dotnet new globaljson
+# insert 8.0.103
+#############################à
+
+
+###################### Ubuntu 20.04
+# https://learn.microsoft.com/en-us/dotnet/core/install/linux-ubuntu-install?tabs=dotnet8&pivots=os-linux-ubuntu-2004
+##############
+# wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+# sudo dpkg -i packages-microsoft-prod.deb
+# rm packages-microsoft-prod.deb
+#############################à
 
 sudo apt-get update
 sudo apt install dotnet-sdk-8.0
@@ -118,8 +130,34 @@ builder.Services.AddTransient<IEmailSender, EmailSender>();
 ##############################à
 # Password Reset ASVS 2.1.5
 #################################
-
+# Add reset password components via scaffolding
 dotnet aspnet-codegenerator identity -dc Globomantics.Survey.Data.IdentityDbContext --files "Account.ResetPassword;Account.ResetPasswordConfirmation" --databaseProvider sqlite
+# In Areas>Identity>Pages>Account>ResetPassword.cshtml.cs Line 52
+# Change max 128 and min length 12
+# Run, login as user, click on user to reset password
 
+###########################
+# MFA 2 Fact Auth ASVS 2.2.2 / 2.8.1
+###########################
 
+# Use scaffolder
 dotnet aspnet-codegenerator identity -dc Globomantics.Survey.Data.IdentityDbContext --files "Account.Manage.Disable2fa;Account.Manage.TwoFactorAuthentication;Account.Manage.EnableAuthenticator" --databaseProvider sqlite
+
+# Add in wwwroot/lib QR code generator from https://davidshimjs.github.io/qrcodejs/ (take from Net6/3)
+# Add in wwwroot/js a file qr.js to use library (take from Net6/3)
+# Change line 183 of Manage>EnableAuthenticator.cshtlm.cs to "Globomantics Survey"
+# In EnableAuthenitcator.cshtml add reference to js scripts at the bottom, remove tooltip code at line 25
+    <script type="text/javascript" src="~/lib/qrcode.js"></script>
+    <script type="text/javascript" src="~/js/qr.js"></script>
+
+##############################
+# Rate Limiting Logins
+################################
+# In Programcs go to options.Password and add
+    options.Lockout.MaxFailedAccessAttempts = 5;
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10);
+# In Login.cshtml.cs line 114 se lockoutOnFailure: true
+# Try to fail login 5 times
+
+
+
