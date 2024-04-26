@@ -111,9 +111,31 @@ public UserDetailsViewModel(IdentityUser user, bool isAdmin)
 # In UserController.cs line 35 we check for AdminRole to set up the ViewModel
 # In Areas>Admin>Views>User>ViewUser.cshtml we set up the GUI buttons to set/unset admin
 
+# Run and test logging in as SuperAdmin@globomantics.com (email=pw), go manually to .../admin/user
+
 ###################
 # CLIENT SIDE ACCESS VALIDATION
 ###################
+# If we login as just Admin@globomantics.com we still see the Set/Unset buttons, we need to adjust UI to hide
+# Admin>Views>_ViewImports add 
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService
+# In ViewUser.cs we have added control to visualize buttons
+@if ((await AuthorizationService.AuthorizeAsync(User, "SuperAdmin")).Succeeded)
+
+# ADD MENU ITEM IN HOME IF YOU HAVE ADMIN ROLE
+# Views>Shared>_Layout.cshtml line 27-28
+# <li class="nav-item">
+#                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+#                        </li>
+                    @if (User.IsInRole("Administrator"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Admin">Admin</a>
+                        </li>
+                    }
+#                    </ul>
+#                    <partial name="_LoginPartial" />
 
 
 
