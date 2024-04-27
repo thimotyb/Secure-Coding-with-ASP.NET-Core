@@ -111,6 +111,39 @@ return Redirect("Survey/SurveyCompleteMessageAdo/" + id);
 # SqliteException: ******SQLite Error 1*******: 'unrecognized token: "'8F8AFC29-228D-4508-9F7A-7D17C4AE9900''"'.
 # Try this:
  Survey/SurveyCompleteMessageAdo/8f8afc29-228d-4508-9f7a-7d17c4ae9900' or 1=1 --
+# You see two lines from the CustomerSurvey table, show tables by using https://sqliteviewer.app/ and loading the GloboSurvey.db table (download from project and upload in page)
+
+########################
+# OS COMMAND INJECTION ASVS 5.3.8
+########################
+# Compare in 6/start with 6/end in Areas>Admin>Controllers>SurveyController copy over method SurveyReport
+# in  6/end in Areas>Admin>Controllers>SurveyController place back unsecure code of 6/start, comment the secure part
+# chmod ugo+x runreport.sh in 6/end (to execute it)
+[HttpPost("Admin/SurveyReport")]
+public IActionResult SurveyReport([FromForm] string surveyName)
+{
+    #string cmdText = @"/c C:\ps\RunReport.bat –name " + surveyName;
+    string cmdText = @" --name " + surveyName;   # LINUX VERSION iF YOU USE GITPOD
+
+    var p = new Process();
+    #p.StartInfo.FileName = "cmd.exe";
+    p.StartInfo.FileName = "./runreport.sh"; # LINUX VERSION iF YOU USE GITPOD
+    p.StartInfo.Arguments = cmdText;
+    p.Start();
+    p.WaitForExit();
+
+    return Redirect("/Admin/Surveys");
+}
+# You can run from 6/end dotnet run , but copy GloboSurveyUser.cs in Areas>Admin>Identity>Data from 7/start/Aread/Admin/Data/ if not there
+# Login as Admin@globomantics.com, go to /Admin/Surveys
+# Press "Print Report" button, but first use Fiddler to intercept request (Rules>Automatic Breakpoints>Before Requests), append "& mkdir xxx" as an OS injection example
+# You can use Fiddler also with codeshare, just allow unsecure certificate (need Options > HTTPS > Caputre HTTPS connect, Decrypt HTTPS traffic from browsers only
+
+################
+# INSECURE DESERIALIZATION ASVS 5.5
+################
+
+
 
 
 
