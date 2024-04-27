@@ -99,7 +99,8 @@ string htmlMessage = EmailBody
                     //"Select SurveyCompleteMessage from CustomerSurveys where id = @id";
                     "Select SurveyCompleteMessage from CustomerSurveys where id = '"+id.ToUpper()+"'";
                     //command.Parameters.Add(new SqliteParameter("@id", id.ToUpper()));
-# Add Views>Survey>SurveyCompleteMessage.cshtml from 7/start
+# Add Views>Survey>SurveyCompleteMessage.cshtml from 6/start
+# Copy GloboSurvey.db from 6/end into project (you need an additional line in table CustomerSurvey to prove injection
 # Replace CompleteSurvey Redirect line 86 to Ado to use the method with improper injectable statement
 return Redirect("Survey/SurveyCompleteMessageAdo/" + id);
 # Replace the correct with query parameters, with the injectable one, 
