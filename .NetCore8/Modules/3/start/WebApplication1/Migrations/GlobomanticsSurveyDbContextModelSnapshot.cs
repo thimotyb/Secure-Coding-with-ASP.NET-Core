@@ -41,7 +41,15 @@ namespace Globomantics.Survey.Migrations
                             Id = new Guid("8f8afc29-228d-4508-9f7a-7d17c4ae9900"),
                             SurveyCompleteMessage = "You completed the survey, THANKS!!!",
                             Title = "Staff Survey - Carved Rock"
-                        });
+                        },
+                        new
+                        {
+                            Id = new Guid("8f8afc29-228d-4508-9f7a-7d17c4ae9901"),
+                            SurveyCompleteMessage = "You are a wired brain coffee addict, we love you!",
+                            Title = "Staff Survey - Wired Brain Coffee"
+                        }
+                        
+                        );
                 });
 
             modelBuilder.Entity("Globomantics.Survey.Models.CustomerSurveyResponse", b =>
