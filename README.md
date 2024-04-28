@@ -1,4 +1,6 @@
 # Secure-Coding-with-ASP.NET-Core
+Relevant MS Page:
+https://learn.microsoft.com/en-us/aspnet/core/security/?view=aspnetcore-8.0
 
 3. Authentication
    - ASP.NET Core Identity
