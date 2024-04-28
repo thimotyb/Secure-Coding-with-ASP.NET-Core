@@ -47,7 +47,7 @@ namespace Globomantics.Survey.Areas.Admin.Controllers
             return View();
         }
 
-        [HttpPost("Admin/SurveyResponse/upload")]
+        /*[HttpPost("Admin/SurveyResponse/upload")]
         public IActionResult Upload(string xmlContent)
         {
             string output = "";
@@ -62,6 +62,17 @@ namespace Globomantics.Survey.Areas.Admin.Controllers
 
                 return View("uploadResponse", output);
             }
+        }*/
+         [HttpPost("Admin/SurveyResponse/upload")]
+        public IActionResult Upload(string xmlContent)
+        {
+            var xmlDocument = new XmlDocument();
+            xmlDocument.XmlResolver = new XmlUrlResolver(); 
+            xmlDocument.LoadXml(xmlContent);
+            string output = xmlDocument.InnerText;
+
+            return View("uploadResponse", output);
         }
+
     }
 }

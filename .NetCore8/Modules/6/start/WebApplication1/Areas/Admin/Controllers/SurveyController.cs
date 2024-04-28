@@ -43,5 +43,4 @@ namespace Globomantics.Survey.Areas.Admin.Controllers
             return Redirect("/Admin/Surveys");
         }
     }
-    }
 }

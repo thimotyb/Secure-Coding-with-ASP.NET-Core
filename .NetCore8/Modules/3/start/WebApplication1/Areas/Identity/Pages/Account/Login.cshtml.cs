@@ -120,6 +120,7 @@ namespace Globomantics.Survey.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
+                    //return Redirect(returnUrl);
                     return LocalRedirect(returnUrl);
                 }
                 if (result.RequiresTwoFactor)

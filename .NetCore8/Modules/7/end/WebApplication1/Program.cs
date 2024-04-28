@@ -86,7 +86,7 @@ builder.Services.AddAuthorization(options =>
     );
 });
 
-if (!builder.Environment.IsDevelopment())
+/*if (!builder.Environment.IsDevelopment())
 {
     builder.Services.AddHsts(options =>
     {
@@ -111,9 +111,9 @@ else
     builder.Services.AddHttpsRedirection(options =>
     {
         options.RedirectStatusCode = (int)HttpStatusCode.TemporaryRedirect;
-        options.HttpsPort = 7236;
+        options.HttpsPort = 3000;
     });
-}
+}*/
 
 var app = builder.Build();
 

@@ -30,7 +30,7 @@ namespace Globomantics.Survey.Areas.Admin.Controllers
             return View(customerSurvey);
         }
 
-        [HttpPost("Admin/SurveyReport")]
+        /*[HttpPost("Admin/SurveyReport")]
         public IActionResult SurveyReport([FromForm] string surveyName)
         {
             Regex regex = new Regex(@"^[a-zA-z\-\s]+$");
@@ -45,6 +45,20 @@ namespace Globomantics.Survey.Areas.Admin.Controllers
             p.StartInfo.ArgumentList.Add(@"C:\ps\RunReport.bat");
             p.StartInfo.ArgumentList.Add("–name");
             p.StartInfo.ArgumentList.Add(surveyName);
+            p.Start();
+            p.WaitForExit();
+
+            return Redirect("/Admin/Surveys");
+        }*/
+
+        [HttpPost("Admin/SurveyReport")]
+        public IActionResult SurveyReport([FromForm] string surveyName)
+        {
+            string cmdText = " --name " + surveyName;
+
+            var p = new Process();
+            p.StartInfo.FileName = "./runreport.sh";
+            p.StartInfo.Arguments = cmdText;
             p.Start();
             p.WaitForExit();
 
