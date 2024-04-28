@@ -6,6 +6,9 @@
 # DATA ENCRYPTION
 #################
 
+TODO TODO TODO
+### TODO FIX IN MAIN THE START FOLDER OF MODULE 7 SO YOU DONT HAVE TO MAKE PPL FIX IT BEFORE STARTING
+
 # Look at 7/end/ - Areas>Admin>Controllers>HomeController.cs InitCookie method
 # Go to 7/start replace HomeController.cs to add InitCookie and all DI injections
 # Rename all additional Migrations in Migrations/GlobomanticsSuerveyDb
@@ -22,6 +25,26 @@ Protect data: CfDJ8KrCsBgxixlNlL7y-I19S4TNZ5Tu2Gzg2hEMehKlt1fcRjnyok3-ftG8NiHW61
 ####################àà
 # SECRET MANAGEMENT
 ###################
+# Examples from https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-8.0&tabs=windows
+###################
+dotnet user-secrets init
+# Set UserSecretsId to '5a3c717c-a2c2-460c-a136-25d5e09650ed' for MSBuild project '/workspace/Secure-Coding-with-ASP.NET-Core/.NetCore8/Modules/7/start/WebApplication1/Globomantics.Survey.csproj'.
+# It is set in .csproj  <UserSecretsId>5a3c717c-a2c2-460c-a136-25d5e09650ed</UserSecretsId>
+dotnet user-secrets set "Movies:ServiceApiKey" "12345"
+# TODO: TRY ON LOCAL WINDOWS MACHINE AS SET SECRET DOES NOT WORK ON GITPOD
+
+#####################
+# CLIENTSIDE DATA PROTECTION ASVS 8.2
+######################
+# Run 7/start (after you have fixed it), go to /Admin/User, select SuperAdmin, it has "Send Message" button (only for Admins)
+# Send a message intercept it in Fiddler, Look in Raw mode, message is in the URL as QueryParam because the Admin>Controllers>UserController for 
+# SendEmail uses GET (cant use body as POST), and in Areas>Admin>Views>User>ViewUser.cshtml in the form line 57 uses action GET. even if you use HTTPS the URL can be stored in 
+# history, proxies, caches in unencrypted form
+# ----> Change to POST both in Controller and View and retry, plus it gets the CSRF Verif Token
+
+###################
+# CACHING MANAGEMENT
+####################
 
 
 
