@@ -1,3 +1,43 @@
+##############
+# PROTECTING DATA - CRYPTO
+# ASVS Chapt6 Cryptography, ASVS Chapt 8 Data Protection, ASVS Chapt9 TLS Communication
+# Microsoft.AspNetCore.DataProtection API https://learn.microsoft.com/en-us/aspnet/core/security/data-protection/introduction?view=aspnetcore-8.0
+##############
+# DATA ENCRYPTION
+#################
+
+# Look at 7/end/ - Areas>Admin>Controllers>HomeController.cs InitCookie method
+# Go to 7/start replace HomeController.cs to add InitCookie and all DI injections
+# Rename all additional Migrations in Migrations/GlobomanticsSuerveyDb
+cd Migrations/GlobomanticsSurveyDb/
+for file in *.cs; do mv -- "$file" "${file%.cs}.bak"; done
+# Copy Index.cshtml.cs from 8/start in Areas>Admin>Identity>Pages>Account>Manage (it's missing!)
+# In 7/start check you have GloboIdentity.db (not GLOBOIDENTITY.db), and in appsettings.Development.json line 10 check GloboIdentity.db
+# In Program.cs we need to have builder.Services.AddDataProtection(), but actually WebApplication.CreateBuilder() already adds all necessary dep inj
+# Login and navigate to /Admin/initcookie to test it  
+# In console: Initial data: Admin@globomantics.com
+Protect data: CfDJ8KrCsBgxixlNlL7y-I19S4TNZ5Tu2Gzg2hEMehKlt1fcRjnyok3-ftG8NiHW61v-bxBG9e82tkvqCggJ-augImQE772nyflQagVNMrDPz94zAoP5jOjoSMjB1O579s-VjvJxDi5mjSwf4L7gdEk2X_c
+#################### Also check cookie "ProtectedData"
+
+####################àà
+# SECRET MANAGEMENT
+###################
+
+
+
+
+
+# In Program.cs, comment away Hsts redirect block (lines 89-116)
+
+##########
+# HTTPS in gitpod, in .gitpod.yml
+##########
+# ports:
+    - name: Frontend Application
+      port: 3000
+      protocol: https
+#############
+
 dotnet user-secrets init
 dotnet user-secrets set "ConnectionStrings:IdentityDbContextConnection" "Data Source=GLOBOIdentity.db"
 
