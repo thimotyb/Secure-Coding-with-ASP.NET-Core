@@ -12,6 +12,7 @@ tasks:
 vscode:
   extensions:
     - muhammad-sammy.csharp
+    - vscode-sqlite
 
 ports:
     - name: Frontend Application
