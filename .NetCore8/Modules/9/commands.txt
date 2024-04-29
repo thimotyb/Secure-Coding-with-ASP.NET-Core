@@ -32,10 +32,18 @@ dotnet list package --include-transitive
 dotnet list package --vulnerable --include-transitive
 # We can look at recommended version e.g. for Nuget.Common table says 6.3.1->6.3.3, update it in .csproj 
 <PackageReference Include="Nuget.Common" Version="6.3.3" />
-#and then use dotnet restore
+#and then use 
+dotnet restore
 dotnet list package --vulnerable --include-transitive # Check if fixed
 
 ######################
 # SUBRESOURCE INTEGRITY SRI FOR JAVASCRIPT
+# Hash the js scripts to check for integrity
 ######################
+cd89/start/WebApplication1/
+# In Views>Shared>_Layout.cshtml we have some js included, change to (change your own gitpod address)
+ <script src="https://7236-thimotyb-securecodingwi-cxdtkhto0g2.ws-eu110.gitpod.io//lib/jquery/dist/jquery.min.js" integrity="sha384-x" crossorigin="anonymous"></script>
+# Run the app, go to home, look error in devtools js console
+#Failed to find a valid digest in the 'integrity' attribute for resource 'https://7236-thimotyb-securecodingwi-cxdtkhto0g2.ws-eu110.gitpod.io//lib/jquery/dist/jquery.min.js' with computed SHA-384 integrity 'ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2'. The resource has been blocked.
+# copy hash in error, replace in x, rerun, inspect, error is fixed
 
