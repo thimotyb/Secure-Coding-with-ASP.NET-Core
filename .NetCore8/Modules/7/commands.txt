@@ -98,7 +98,42 @@ dotnet aspnet-codegenerator identity -dc Globomantics.Survey.Data.IdentityDbCont
 ###############
 # TLS ASVS 9.1
 #################
+# Redirect HTTP->HTTPS, enforce HTTPS only
+# In Program.cs before builder.Build()
+if (!builder.Environment.IsDevelopment())
+{
+    builder.Services.AddHsts(options =>
+    {
+        options.IncludeSubDomains = true;
+        options.MaxAge = TimeSpan.FromDays(365);
+    });
 
+    builder.Services.AddHttpsRedirection(options =>
+    {
+        options.RedirectStatusCode = (int)HttpStatusCode.PermanentRedirect;
+        options.HttpsPort = 443;
+    });
+}
+else
+{
+    builder.Services.AddHsts(options =>
+    {
+        options.IncludeSubDomains = true;
+        options.MaxAge = TimeSpan.FromMinutes(1);
+    }); 
+
+    builder.Services.AddHttpsRedirection(options =>
+    {
+        options.RedirectStatusCode = (int)HttpStatusCode.TemporaryRedirect;
+        options.HttpsPort = 7236;
+    });
+}
+### Also add:
+app.UseHsts();
+app.UseHttpsRedirection();
+# Hsts cant be used on loopback/localhost, need to use domainname (add port in gitpod as per conf at the end of this file)
+# Start with https profile (it is defined in launchSettings.json)
+dotnet run --launch-profile https
 
 
 
