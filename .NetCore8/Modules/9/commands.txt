@@ -1,3 +1,23 @@
 ############
-# Timing 3:20
+# Timing 3:20:00
+# VULNERABLE DEPENDENCIES ASVS Chapt 10 Malicious Code: 
+# 10.3 Application Integrity
 ###########
+
+###########
+# VERIFY CODE SIGNATURE ON NUGET PACKAGES
+############
+# Nuget packages are in /home/gitpod/.nuget/packages
+cd /home/gitpod/.nuget/packages
+cd newtonsoft.json/
+ls
+cd 13.0.1/
+ls
+dotnet nuget verify --all -v normal newtonsoft.json.13.0.1.nupkg
+# Responds: Successfully verified package 'Newtonsoft.Json.13.0.1'.
+# Checks the Author certificate (date, issuer)
+# Checks the Repository cert as well
+# Verify all packages
+cd ../..
+dotnet nuget verify --all **/*.nupkg
+
