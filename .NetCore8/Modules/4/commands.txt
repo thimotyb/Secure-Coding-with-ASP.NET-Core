@@ -47,12 +47,26 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 ##############
-# STEPUP AUTHENTICATION
+# STEPUP AUTHENTICATION Timing 58:51
 ##############
 # Create a new page for stepup auth
 dotnet aspnet-codegenerator identity -dc Globomantics.Survey.Data.IdentityDbContext --files "Account.LoginWith2fa" --databaseProvider sqlite
-# Create Attributes folder and EnforceStepUpAttribute.cs
-# TODO: ADD CHECK2FS PAGES TO IMPLEMENT STEPUP WITH 2FA
+# Create Attributes folder and copy EnforceStepUpAttribute.cs from 4/end
+#  ADD CHECK2FS PAGES TO IMPLEMENT STEPUP WITH 2FA
+# From 4/end Areas>Identity>Pages>Account copy files Check2fa.cshtml and Check2fa.cshtml.cs back in 3/start
+# Comment chck2fa.cshtml.cs, Authenticator name, check if user has 2FA, interaction with form to type Auth PIN
+# Line 75 Verify2FactorToken method to verify token
+
+# IN Areas>Admin>Controllers>SurveyResponseController.cs add [EnforceStepUp] to class
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+...
+    [Authorize]
+    [EnforceStepUp] 
+#    [Area("Admin")]
+# Run, login with user with 2fa enabled, and go to Admin/Surveys, select View Responses it now asks Authenticator
+
 
 ################
 # LOGGING OUT
