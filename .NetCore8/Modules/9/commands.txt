@@ -40,7 +40,7 @@ dotnet list package --vulnerable --include-transitive # Check if fixed
 # SUBRESOURCE INTEGRITY SRI FOR JAVASCRIPT
 # Hash the js scripts to check for integrity
 ######################
-cd89/start/WebApplication1/
+cd 8/start/WebApplication1/
 # In Views>Shared>_Layout.cshtml we have some js included, change to (change your own gitpod address)
  <script src="https://7236-thimotyb-securecodingwi-cxdtkhto0g2.ws-eu110.gitpod.io//lib/jquery/dist/jquery.min.js" integrity="sha384-x" crossorigin="anonymous"></script>
 # Run the app, go to home, look error in devtools js console
