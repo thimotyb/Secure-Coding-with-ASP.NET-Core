@@ -46,4 +46,9 @@ cd89/start/WebApplication1/
 # Run the app, go to home, look error in devtools js console
 #Failed to find a valid digest in the 'integrity' attribute for resource 'https://7236-thimotyb-securecodingwi-cxdtkhto0g2.ws-eu110.gitpod.io//lib/jquery/dist/jquery.min.js' with computed SHA-384 integrity 'ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2'. The resource has been blocked.
 # copy hash in error, replace in x, rerun, inspect, error is fixed
+# Hash can also be calculated with
+cd wwwroot/lib/jquery/dist
+openssl dgst -sha384 -binary jquery.min.js | openssl base64 -A
+# Try to add a space at the end of the min.js, that changes the hash, if you reload the page, it is blocked again
+
 
