@@ -12,3 +12,8 @@ tasks:
 vscode:
   extensions:
     - muhammad-sammy.csharp
+
+ports:
+    - name: Frontend Application
+      port: 7236
+      protocol: https
