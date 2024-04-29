@@ -91,6 +91,11 @@ namespace Globomantics.Survey.Migrations
                 values: new object[] { new Guid("8f8afc29-228d-4508-9f7a-7d17c4ae9900"), "You completed the survey, THANKS!!!", "Staff Survey - Carved Rock" });
 
             migrationBuilder.InsertData(
+                table: "CustomerSurveys",
+                columns: new[] { "Id", "SurveyCompleteMessage", "Title" },
+                values: new object[] { new Guid("8f8afc29-228d-4508-9f7a-7d17c4ae9901"), "You are a wired brain coffee addict, we love you!", "Staff Survey - Wired Brain Coffee" });
+
+            migrationBuilder.InsertData(
                 table: "CustomerSurveyQuestions",
                 columns: new[] { "Id", "Answer", "PossibleAnswers", "Question", "SurveyId" },
                 values: new object[] { new Guid("8f8afc29-228d-4508-9f7a-7d17c4ae9901"), "", "Less than 1 year|1-5 years|More than 5 years", "How long have you worked at Carved Rock?", new Guid("8f8afc29-228d-4508-9f7a-7d17c4ae9900") });
