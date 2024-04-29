@@ -83,6 +83,9 @@ dotnet tool install --global dotnet-ef --version 8.0.3
 dotnet-ef migrations add Identity --context IdentityDbContext
 dotnet-ef database update --context IdentityDbContext
 
+# Explore with SQL Lite Extension
+# Open Command Palette CTRL+SHIFT+P type SQLLite:Open Database, a new section bottom left # opens to explore DB
+
 # Try now with new login
 dotnet run
 
