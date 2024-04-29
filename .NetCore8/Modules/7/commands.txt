@@ -143,7 +143,8 @@ dotnet run --launch-profile https
 # First try without modification, then with SslProtocols.SSl2, then use modern protocols
  var handler = new HttpClientHandler
     {
-        SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls13
+                //SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls13 // THIS IS OK
+                SslProtocols = SslProtocols.Ssl2 // THIS WILL GIVE NO PROTOCOL AVAILABLE (OLD PROTOCOL)
     };
 
     HttpClient client = new HttpClient(handler);
