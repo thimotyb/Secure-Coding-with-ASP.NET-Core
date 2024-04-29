@@ -2,6 +2,9 @@
 Relevant MS Page:
 https://learn.microsoft.com/en-us/aspnet/core/security/?view=aspnetcore-8.0
 
+Starting instructions from:
+https://github.com/thimotyb/Secure-Coding-with-ASP.NET-Core/blob/main/.NetCore8/Modules/3/commands.txt
+
 3. Authentication
    - ASP.NET Core Identity
    - Implement User Authentication
