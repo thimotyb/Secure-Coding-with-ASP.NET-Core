@@ -45,7 +45,7 @@ dotnet user-secrets set "Movies:ServiceApiKey" "12345"
 ###################
 # CACHING MANAGEMENT
 ####################
-# In Fiddler, IN THE RESPONSE check headers of home page, there are NO cache related headers, instead in login page, there is no-cache (it means always revalidate with server), no-store (it means do not store in cache) directive (don't cache pages with tokens, they change)
+# In Fiddler (you can also use Inspect>Network in chrome devtools click on request), IN THE RESPONSE check headers of home page, there are NO cache related headers, instead in login page, there is no-cache (it means always revalidate with server), no-store (it means do not store in cache) directive (don't cache pages with tokens, they change)
 # No-cache No-store is used automatically because login/logout are FORM based. If they would be just links, they would not get automatically these headers.
 # To add cache protection header globally, add in Program.cs (in pipeline before Auth/auth):
 using Microsoft.Net.Http.Headers;
@@ -75,6 +75,29 @@ app.Use(async (context, next) =>
 # DATA PRIVACY
 # ASVS 8.3.2 Users can remove/export Private Data
 ################
+# Data: Public - Private (Personal) - Protected (needs encryption)
+# We Classify Personal and Protected data, allow User Management (view/delete) using Identity scaffolding
+# In Areas>Identity>Data we extended user with GloboSurveyUser.cs (DateOfBirth DOB is "private" information)
+# Run scaffolder
+# dotnet tool install -g dotnet-aspnet-codegenerator
+# export PATH="$PATH:/home/gitpod/.dotnet/tools"
+dotnet aspnet-codegenerator identity -dc Globomantics.Survey.Data.IdentityDbContext --files "Account.Manage.DownloadPersonalData;Account.Manage.DeletePersonalData" --databaseProvider sqlite --force
+# Add a Using for the new data type in Areas>Identity>Pages>Account>Manage>_ManageNav.cshtml at the top
+@using Globomantics.Survey.Areas.Identity.Data
+# Login as admin user, go to user profile, there is new link Personal Data
+# Download Data look at fields in json
+# In Identity>Pages>Account>Manage>DownloadPersonalData.cshtml.cs it's only collecting PersonalData
+ // Only include personal data for download
+            var personalData = new Dictionary<string, string>();
+            var personalDataProps = typeof(GloboSurveyUser).GetProperties().Where(
+                            prop => Attribute.IsDefined(prop, typeof(PersonalDataAttribute)));
+# To include new fileds (Dob...) add [PersonalData] before each property in GloboSurveyUser.cs
+# Download data again, now it includes 2 new fields
+# Create a new user (not admin), then use the Delete functionality to see how it works
+
+###############
+# TLS ASVS 9.1
+#################
 
 
 
@@ -87,7 +110,7 @@ app.Use(async (context, next) =>
 ##########
 # ports:
     - name: Frontend Application
-      port: 3000
+      port: 7236
       protocol: https
 #############
 
@@ -99,6 +122,6 @@ dotnet add package Kralizek.Extensions.Configuration.AWSSecretsManager
 
 dotnet aspnet-codegenerator identity --listFiles --no-build
 
-dotnet aspnet-codegenerator identity -dc Globomantics.Survey.Data.IdentityDbContext --files "Account.Manage.DownloadPersonalData;Account.Manage.DeletePersonalData" --databaseProvider sqlite --force
+
 
 
