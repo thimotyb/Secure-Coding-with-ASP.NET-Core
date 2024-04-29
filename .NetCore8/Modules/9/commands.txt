@@ -21,3 +21,21 @@ dotnet nuget verify --all -v normal newtonsoft.json.13.0.1.nupkg
 cd ../..
 dotnet nuget verify --all **/*.nupkg
 
+####################
+# SCAN FOR VULNERABLE DEPS IN PROJECT
+#####################
+# Let us start from the last module we finished
+cd 8/start/WebApplication1/
+dotnet list package
+dotnet list package --vulnerable
+dotnet list package --include-transitive
+dotnet list package --vulnerable --include-transitive
+# We can look at recommended version e.g. for Nuget.Common table says 6.3.1->6.3.3, update it in .csproj 
+<PackageReference Include="Nuget.Common" Version="6.3.3" />
+#and then use dotnet restore
+dotnet list package --vulnerable --include-transitive # Check if fixed
+
+######################
+# SUBRESOURCE INTEGRITY SRI FOR JAVASCRIPT
+######################
+
