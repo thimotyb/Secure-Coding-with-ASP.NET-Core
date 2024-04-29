@@ -11,9 +11,13 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("IdentityDbContextConnection") ?? throw new InvalidOperationException("Connection string 'IdentityDbContextConnection' not found.");
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(config =>
+    {
+        config.Filters.Add<ModelStateValidationFilter>();
+    }
+);
 
-if (!builder.Environment.IsDevelopment())
+/*if (!builder.Environment.IsDevelopment())
 {
     builder.Configuration.AddSecretsManager(
         configurator:  options =>
@@ -25,7 +29,7 @@ if (!builder.Environment.IsDevelopment())
                 .Replace("__", ":");
         }
     );
-}
+}*/
 
 builder.Services.AddDbContext<GlobomanticsSurveyDbContext>(
     dbContextoptions => 
@@ -130,9 +134,9 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
 }
 
-app.UseHsts();
+//app.UseHsts();
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 

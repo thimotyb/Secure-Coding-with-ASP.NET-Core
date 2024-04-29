@@ -1,5 +1,4 @@
 @using Globomantics.Survey.Areas.Identity.Data
-
 @inject SignInManager<GloboSurveyUser> SignInManager
 @{
     var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();

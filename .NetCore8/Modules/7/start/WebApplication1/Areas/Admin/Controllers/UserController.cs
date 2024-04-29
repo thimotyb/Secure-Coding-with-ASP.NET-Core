@@ -59,7 +59,7 @@ namespace Globomantics.Survey.Areas.Admin.Controllers
         }
 
 
-        [HttpGet("Admin/User/SendEmail/{Id:guid}")]
+        [HttpPost("Admin/User/SendEmail/{Id:guid}")]
         public async Task<IActionResult> SendEmail(Guid id, string message)
         {
             var user = await _userManager.FindByIdAsync(id.ToString());

@@ -15,6 +15,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Globomantics.Survey.Areas.Identity.Data;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Globomantics.Survey.Areas.Identity.Pages.Account
 {
@@ -83,6 +85,18 @@ namespace Globomantics.Survey.Areas.Identity.Pages.Account
             /// </summary>
             [Display(Name = "Remember me?")]
             public bool RememberMe { get; set; }
+
+            public override string ToString()
+            {
+                using (var algorithm = SHA512.Create())
+                {
+                    string emailHash = BitConverter.ToString(
+                            algorithm.ComputeHash(Encoding.UTF8.GetBytes(Email))
+                        ).Replace("-","");
+                    return "Email: " + emailHash + 
+                        " RememberMe: " + RememberMe;
+                }
+            }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -130,7 +144,7 @@ namespace Globomantics.Survey.Areas.Identity.Pages.Account
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: true);
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User logged in.");
+                    _logger.LogInformation("User logged in: {LoginData}.", Input);
                     return LocalRedirect(returnUrl);
                 }
                 if (result.RequiresTwoFactor)
@@ -144,6 +158,7 @@ namespace Globomantics.Survey.Areas.Identity.Pages.Account
                 }
                 else
                 {
+                    _logger.LogWarning("Invalid login attempt: {LoginData}.", Input);
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                     return Page();
                 }

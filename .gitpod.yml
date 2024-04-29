@@ -16,5 +16,5 @@ vscode:
 
 ports:
     - name: Frontend Application
-      port: 3000
+      port: 7236
       protocol: https
