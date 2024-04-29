@@ -87,6 +87,32 @@ builder.Services.AddControllersWithViews(config =>
 warn: ModelStateValidationFilter[0]
       Input validation failure: Path: /Survey/CompleteSurvey/8f8afc29-228d-4508-9f7a-7d17c4ae9900 Key: questions[0].Answer input: Less than 1 year>
 
+#################
+# VERBOSE ERROR PAGES
+####################
+# Reintroduced SQL Injection vulnerability in 
+# Controllers>SurveyController.cs 
+# Line 27 unsafe, if query made by string concatenation like this:
+# Go directly to /Survey/SurveyCompleteMessageAdo/8f8afc29-228d-4508-9f7a-7d17c4ae9900
+# then altering URL in CompleteMessageAdo like this:
+ /Survey/SurveyCompleteMessageAdo/8f8afc29-228d-4508-9f7a-7d17c4ae9900'  <--- add a quote, error, uncovers injection vulnerability
+# SqliteException: ******SQLite Error 1*******: 'unrecognized token: "'8F8AFC29-228D-4508-9F7A-7D17C4AE9900''"'.
+# Expand error in Error Page, you get entire chunk of code
+# This only for development see Program.cs line 137 (UseExceptionHandler)
+# Run in production mode and try the same:
+# Comment away SecretManager lines 20-32 using AWS Vault in Program.cs
+# In Properties>launchsettings.json change environment to Production
+  "profiles": {
+    "Globomantics.Survey": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "applicationUrl": "https://localhost:7236;http://localhost:5236",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production"
+      }
+    },
+# Run again, go to /Survey/SurveyCompleteMessageAdo/8f8afc29-228d-4508-9f7a-7d17c4ae9900', you see Production Error Page
 
 
 
