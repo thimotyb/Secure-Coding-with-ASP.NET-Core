@@ -48,6 +48,50 @@ using System.Text;
 
 # Rerun, login, in console:       User logged in: Email: 798C222E3DFDE77041FE696CD1793CEE7ECD5541269412975F9B6E1901CABB08A248D02C6691603CD09250CC56DB3B3F9034557B10C1BA3104DD3E65A17A84C1 RememberMe: False.
 
+################à
+# ADDING LOG TO ADMIN EVENTS AND SERVERSIDE VALIDATION FAILURES (SHOULDNT HAPPEN BY USER, ONLY ATTACKERS/GUI BYPASSERS)
+#################
+# In appsettings.Development.json modify:
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "Microsoft.EntityFrameworkCore.Database.Command": "Warning"
+    }
+  },
+# Look in Login.cs, some logs are LogWarning already created by scaffolding (e.g. user lockout)
+# Add for invalid login a log warning:
+_logger.LogWarning("Invalid login attempt: {LoginData}.", Input);
+# In 8/end Admin>Controllers>UserController.cs show how logger is added in injection (field+contructor) and then add
+# all elevation of privilege events (Set/Unset ADmin) (e.g. line 54)
+
+########################
+# LOGGING INPUT VALIDATION
+########################
+# Check all Inputs that get tampered in-between with a ModelStateValidationFilter
+# In Program.cs add (line 14)
+builder.Services.AddControllersWithViews(config =>
+    {
+        config.Filters.Add<ModelStateValidationFilter>();
+    }
+);
+
+# Create ActionFilters folder and copy the filter code in it from 8/end ActionFilters
+# We need to use Fiddler on Gitpod, disable HSTS in Program.cs and work back on HTTP port
+//app.UseHsts();
+//app.UseHttpsRedirection();
+# Go to /Survey/TakeSurvey/8f8afc29-228d-4508-9f7a-7d17c4ae9900
+# Before submit start in Fiddler do Rules>Automatic Breakpoints>Before Requests
+# Use fiddler to intercept, bump up all surveys ID (last digit 5>) change Answer 1 Less than a year>
+# In console you get
+warn: ModelStateValidationFilter[0]
+      Input validation failure: Path: /Survey/CompleteSurvey/8f8afc29-228d-4508-9f7a-7d17c4ae9900 Key: questions[0].Answer input: Less than 1 year>
+
+
+
+
+
+
 
 
 
