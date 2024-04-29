@@ -135,8 +135,20 @@ app.UseHttpsRedirection();
 # Start with https profile (it is defined in launchSettings.json)
 dotnet run --launch-profile https
 
+###################
+# TLS CLIENT SIDE (API CALLS)
+###################
+# Services > GlobomanticsApiServices.cs is using an outgoing HTTPS API Call, we need to specify explicitly the protocol
+#Modify as such (use https://my.api.mockaroo.com/users.json?key=df6343d0 to call external HTTPS API)
+# First try without modification, then with SslProtocols.SSl2, then use modern protocols
+ var handler = new HttpClientHandler
+    {
+        SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls13
+    };
 
+    HttpClient client = new HttpClient(handler);
 
+# Load page with API call by calling Home/GetPublicData
 
 # In Program.cs, comment away Hsts redirect block (lines 89-116)
 
