@@ -45,6 +45,36 @@ dotnet user-secrets set "Movies:ServiceApiKey" "12345"
 ###################
 # CACHING MANAGEMENT
 ####################
+# In Fiddler, IN THE RESPONSE check headers of home page, there are NO cache related headers, instead in login page, there is no-cache (it means always revalidate with server), no-store (it means do not store in cache) directive (don't cache pages with tokens, they change)
+# No-cache No-store is used automatically because login/logout are FORM based. If they would be just links, they would not get automatically these headers.
+# To add cache protection header globally, add in Program.cs (in pipeline before Auth/auth):
+using Microsoft.Net.Http.Headers;
+using System.Net;
+....
+app.Use(async (context, next) =>
+{
+    context.Response.GetTypedHeaders().CacheControl =
+        new Microsoft.Net.Http.Headers.CacheControlHeaderValue()
+        {
+            NoCache = true,
+            NoStore = true
+        };
+    context.Response.Headers[HeaderNames.Pragma] = "no-cache";
+    context.Response.Headers[HeaderNames.Expires] = "0";
+    await next();
+});
+
+#app.UseAuthentication();
+#app.UseAuthorization();
+
+# Run again, inspect headers in RESPONSE of Home, now you have nocache-nostore also there (and everywhere)
+# To apply locally: See Error Action of Home Controller, line 41:
+[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+
+###################
+# DATA PRIVACY
+# ASVS 8.3.2 Users can remove/export Private Data
+################
 
 
 
