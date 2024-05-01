@@ -107,7 +107,59 @@ docker run -d --publish 3310:3310 clamav/clamav:latest
 
 #################
 # FILE STORAGE AND PATH TRAVERSAL PROTECTION
+# we assign random name to uploaded file and store in folder external to the application
 #################
+# Now Uploads folder is inside solution tree
+# To use Fiddler, it may be necessary to uncomment HSTS in the pipeline in Program.cs, go on the HTTP port
+# Try to upload (upload a small file, 40K), intercept with Fiddler, and in Fiddler go to raw mode, search the filename param in WebkitFormBoundary, change the name to ../<filename>, you will see the upload happening from outside the Uploads folder --> danger
+# To Circumvent this, we rename the file using the specific upload path. In SaveFile in FileUploadController.cs, replace the method with
+private async Task SaveFile(IFormFile uploadFile)
+        {
+            var filePath = UploadPath + Path.GetRandomFileName();
+
+            using (var stream = System.IO.File.Create(filePath))
+            {
+                await uploadFile.CopyToAsync(stream);
+            }            
+        }
+# This would additionally need a new table to store the original filename, original owner, date of upload, etc.
+# Also good idea to change UploadPath at line 63 to a path outside the application (better different disk even)
+
+##############à
+# VALIDATING FILE TYPES BY EXTENSIONS AND TYPE SIGNATURES
+# List of Type signatures: https://en.wikipedia.org/wiki/List_of_file_signatures
+###############
+# Add Services>FileValidationServices.cs from 11/end
+# In FileUploadController.cs, add the Validation Service (inject as field and in constructor, change constructor signature)
+using Globomantics.Survey.Services;
+...
+private readonly FileValidationService _fileValidationService; // as field
+...
+  public FileUploadController(IConfiguration configuration,
+      FileValidationService fileValidationService)
+  {
+      Configuration = configuration;
+      _fileValidationService = fileValidationService;
+...
+# Add validation before the Virus Scan call (ca. line 49)
+  if (!_fileValidationService.IsValid(uploadFile))
+  {
+      ModelState.AddModelError("File", string.Format("File type is invalid"));
+      return View("Index"); 
+  }
+# In Program.cs we add the class in the Dependency Injection
+builder.Services.AddTransient<FileValidationService>();
+# https://stackoverflow.com/questions/38138100/addtransient-addscoped-and-addsingleton-services-differences
+# Transient objects are always different; a new instance is provided to every controller and every service.
+# Scoped objects are the same within a request, but different across different requests.
+# Singleton objects are the same for every object and every request.
+# Load go to file upload, try to upload a .txt file, then create a .txt file and rename it to .png, it will still not work, try a real png
+
+
+
+
+
+
 
 
 
