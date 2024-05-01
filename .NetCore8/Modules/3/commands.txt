@@ -1,3 +1,4 @@
+# (You can connect with gitpod.io using your GitHub, or *BitBucket* account
 # extension: free-csharp-vscode
 # https://www.gitpod.io/docs/introduction/languages/dotnet#pthe-c-extensionp
 ###############################
