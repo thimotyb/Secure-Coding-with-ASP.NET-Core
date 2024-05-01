@@ -159,8 +159,27 @@ builder.Services.AddTransient<FileValidationService>();
 # SSRF Server Side Request Forgery ASVS 12.3.3
 #  Related to requests, it happens when the request provides an URL, and the server uses that URL as a basis to fetch a resource.
 # https://portswigger.net/web-security/ssrf, namely https://portswigger.net/web-security/ssrf#ssrf-attacks-against-the-server
-# DO NOT trust URLs coming from outside. This could lead to exploring internal server URLs, IPs, etc.
+# DO NOT trust URLs coming from outside. This could lead to exploring internal server URLs, IPs, etc. Use IDs, not URLs to identy resources, or at list whitelist the URLs allowed, validate the responses from that URLs (e.g. we expect a specific JSON type)
 ##############################
+# Add Console.WriteLine("****"+response); Console.WriteLine("****"+responseContent); in Admin>Controllers>AvatarController.cs
+# Try browse to /Admin/Avatar
+# Open png: https://upload.wikimedia.org/wikipedia/commons/7/70/Example.png
+# With google dev tools, inspect the page with pointer, in HTML code you can see png data
+# Start an internal-only mock service, e.g.
+cd /workspace
+git clone https://github.com/thimotyb/shipping-api-node.git
+cd shipping-api-node
+docker-compose up -d
+curl localhost:8080/posts     # a service is up internally
+# cat/etc/hosts to see different local name linked to localhost (to bypass localhost in Request)
+cat /etc/hosts
+curl thimotyb-securecodingwi-cxdtkhto0g2:8080/posts
+# Now try SSRF from /Admin/Avatar page with another URL (e.g. http://<internal ip>:8080), you will get page information or error if localhost not allowed
+http://thimotyb-securecodingwi-cxdtkhto0g2:8080/posts
+# Inspect again with devtools, and point to broken image, local API has been penetrated via SSRF
+# To remedy this, whitelist the URLS at least
+# Copy Admin>Controller>AvatarController.cs from 11/end  (and AllowedDomains List has been added)
+
 
 
 
