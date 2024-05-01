@@ -1,3 +1,16 @@
+########################
+# HANDLING UNTRUSTED FILES [4:25:00]
+# Dealing with files intented to exhaust resources
+# ASVS Chapt 12 Files and Resources. 12.1 File Upload, 12.3 File Execution, 12.4 File Storage, 12.5 File Download, 12.6 SSRF Protection Server requests driven by user input
+# .NET Buffering with IFormFile (uses memory)
+# .NET Streaming store without impact memory straight to disk (for bigger files)
+# Check max upload size; use dedicated (cloud) storage for files (separate)
+# File Name checks; Path Traversal (../); avoid IDOR, store the filename with a completely different randomly generated filename
+# Use file extension allow list; check file byte signature to avoid user renames extension
+# Scan uploaded file for viruses
+# Check folder permission where uploads are stored
+##########################
+
 docker run -d --publish 3310:3310 clamav/clamav:latest
 
 dotnet add package nClam
