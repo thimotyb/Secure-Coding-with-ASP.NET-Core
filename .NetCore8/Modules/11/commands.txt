@@ -100,9 +100,10 @@ var scanResult = await VirusScan(uploadFile);
 docker run -d --publish 3310:3310 clamav/clamav:latest
 # Create the "Uploads" folder in project root
 # Now login and upload the malware test file. Your antivirus will delete the file if you use local PC to connect
-# Use lynx to login locally (starting from inside the folder of the project), perform login to https://localhost:7236 then go (G option) to https://localhost:7236/Admin/FileUpload and upload
+# Use lynx from inside a new Gitpod.io terminal to login locally (starting from inside the folder of the project), perform login to https://localhost:7236 then go (G option) to https://localhost:7236/Admin/FileUpload and upload
 ./malware-test.txt
 # Submit in lynx and you will see error "The file contains a virus!"
+# Answer "y" every time it complains for the certificate
 
 #################
 # FILE STORAGE AND PATH TRAVERSAL PROTECTION
