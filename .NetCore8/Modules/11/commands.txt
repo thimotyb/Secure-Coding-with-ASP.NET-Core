@@ -17,8 +17,96 @@
 # Go to 11/start, do dotnet run, should compile straight away
 # Login Admin@globomantics.com/Admin@globomantics.com
 # Browse to /admin/FileUpload
+# Try to upload smth > 30 MB (This is the default limit in Kestrel)
+# Setting at project level: appsettings.json "MaxFileSize": 102400
+  "ConnectionStrings": {
+    "SurveyDbConnectionString": "Data Source=GloboSurvey.db",
+    "IdentityDbContextConnection": "Data Source=Globomantics.Survey.db"
+  },
+  "MaxFileSize": 102400
+}
+# In Areas>Admin>Controllers>FileUploadController.cs, add to the constructor:
+private readonly long MaxFileSizeBytes = 0; // (in the class fields)
+...
+MaxFileSizeBytes = Convert.ToInt64(Configuration["MaxFileSize"]); // (inside the constructor)
+# In FileUploadAsync method add logic for validation of the size
+if (uploadFile.Length > MaxFileSizeBytes)
+  {
+      ModelState.AddModelError("File", string.Format("The file is too large. It cannot be above {0} bytes", MaxFileSizeBytes));
+      return View("Index");    
+  }
+# Run and try to upload something around 400K
 
+### SETTING SIZE GLOBALLY AT FORM LEVEL
+# In Program.cs add a Configure for FormOptions
+using Microsoft.AspNetCore.Http.Features;
+...
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = Convert.ToInt64(builder.Configuration["MaxFileSize"]);
+});
 
-docker run -d --publish 3310:3310 clamav/clamav:latest
-
+####################à
+# USING AN ANTIVIRUS TO SCAN FILE UPLOADS PROGRAMMATICALLY
+#####################
+# EICAR files contains files with patterns to trigger AVs for testing at eicar.org
+# Create a malware-test.txt file with this string
+X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*
+# Setup conf settings in appsettings.json
+  "MaxFileSize": 102400,
+  "AntiVirus": {
+    "Host": "localhost",
+    "Port": 3310
+  }
+}
+# In Admin>Controllers>FileUploadController.cs inject these properties into constructor
+        private readonly string AntiVirusHost = ""; //(in fields)
+        private readonly int AntiVirusPort = 0;
+...
+            AntiVirusHost = Configuration["AntiVirus:Host"]; //(in constructor)
+            AntiVirusPort = Convert.ToInt32(Configuration["AntiVirus:Port"]);
+# Add Clam package
 dotnet add package nClam
+# In FileUploadController.cs, add VirusScan method (copy it from 11/end)
+using nClam;
+...
+     private async Task<ClamScanResult> VirusScan(IFormFile uploadFile)
+        {
+            var clam = new ClamClient(AntiVirusHost, AntiVirusPort);
+
+            var memoryStream = new MemoryStream();  
+            uploadFile.OpenReadStream().CopyTo(memoryStream);  
+            byte[] fileBytes = memoryStream.ToArray(); 
+
+            return await clam.SendAndScanFileAsync(fileBytes); 
+        }
+# In FileUploadController,cs in the FileUploadAsync method add the call to this method (line 45)
+var scanResult = await VirusScan(uploadFile);
+
+            switch (scanResult.Result)  
+            {  
+                case ClamScanResults.Clean:  
+                    await SaveFile(uploadFile);
+                    break;
+                case ClamScanResults.VirusDetected:  
+                    ModelState.AddModelError("File", "The file contains a virus!");
+                    break;  
+                default:  
+                    ModelState.AddModelError("File", "An error was encountered while scanning the file");
+                    break;  
+            }  
+
+# Run the antivirus in dockerized version
+docker run -d --publish 3310:3310 clamav/clamav:latest
+# Create the "Uploads" folder in project root
+# Now login and upload the malware test file. Your antivirus will delete the file if you use local PC to connect
+# Use lynx to login locally (starting from inside the folder of the project), perform login to https://localhost:7236 then go (G option) to https://localhost:7236/Admin/FileUpload and upload
+./malware-test.txt
+# Submit in lynx and you will see error "The file contains a virus!"
+
+#################
+# FILE STORAGE AND PATH TRAVERSAL PROTECTION
+#################
+
+
+
