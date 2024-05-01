@@ -37,6 +37,91 @@ public class RangeResponseViewModel : IValidatableObject
 #######################
 # PROTECTING BUSINESS LOGIC FLOWS
 #######################
+# We have a flow in which you need to confirm email before do survey, this can be bypassed, we have to prevent this, adding some logic based on Session
+######################
+# Go to Survey/Step1/8f8afc29-228d-4508-9f7a-7d17c4ae9000, submit the email (Admin@globomantics.com), we can access the Range Survey
+# You can bypass this step by just loading Survey/Step2/8f8afc29-228d-4508-9f7a-7d17c4ae9000
+# We add a Workflow Service to enforce Complete Mediation on all the steps
+# In Services add WorkflowService.cs (copy it from 10/end/Services)
+# In Models add WorkflowStatus.cs (copy it from 10/end/Services)
+# Comment and examine logic of WorkflowService.cs
+# In Controllers>SurveyController.cs enforce the workflow
+# Line 41 end of ConfirmEmail add
+HttpContext.Session.CompletedStep(id, 1);
+# Method TakeSurvey at the beginning (Line 48) add
+      if (!HttpContext.Session.CanAccessStep(id, 2))
+      {
+          return Redirect("/Survey/Step1/" + id);
+      }
+# Try now to go to step2 without confirming email in step1, you are redirected back
+
+###################
+# RATE LIMITING
+###################
+# Submit 1 survey in a 5 minute window, to prevent automation (bots publishing surveys)
+####################
+dotnet add package AspNetCoreRateLimit
+# In Program.cs add it to the builder
+using AspNetCoreRateLimit;   # This is the limiter from .NET Core 6, it has been updated since 7
+...
+builder.Services.AddMemoryCache();
+builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+builder.Services.AddInMemoryRateLimiting();
+builder.Services.Configure<ClientRateLimitOptions>(options =>
+{
+    options.EnableEndpointRateLimiting = true;
+    options.GeneralRules = new List<RateLimitRule>
+    {
+        new RateLimitRule
+        {
+            QuotaExceededResponse = new QuotaExceededResponse{Content = "Please only submit responses one time!"},
+            Endpoint = "POST:/Survey/RangeSurvey/*",
+            Period = "5m",
+            Limit = 1,
+        }
+    };
+});
+# Add in the app pipeline
+app.UseClientRateLimiting();
+#app.UseAuthentication(); # put it before authentication so it rate limits everything even without auth
+# Now Run, start from step1 try to post 2 RangeSurvey, the second gets rate limited when you finish Step2 (go through all the steps until submit the range)
+
+
+
+
+
+
+
+
+
+
+
+
+
+############################################################
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
+...
+builder.Services.AddRateLimiter(_ => _
+    .AddFixedWindowLimiter(policyName: "surveyRateLimiter", options =>
+    {
+        options.PermitLimit = 1;
+        options.Window = TimeSpan.FromMinutes(5);
+        options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        options.QueueLimit = 0;
+    })
+    .OnRejected = (ctx, token) =>
+    {
+        ctx.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+        ctx.HttpContext.Response.WriteAsync("Please only submit responses one time!");
+        return ValueTask.CompletedTask;
+    });
+...
+app.UseRateLimiter();
+
+
+
+
 
 
 
