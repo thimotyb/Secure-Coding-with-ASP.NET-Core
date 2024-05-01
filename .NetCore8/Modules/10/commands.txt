@@ -97,7 +97,7 @@ app.UseClientRateLimiting();
 
 
 
-
+Using the new RateLimiter from .NET Core 7
 ############################################################
 using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
