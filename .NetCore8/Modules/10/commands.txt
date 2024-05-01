@@ -1,3 +1,46 @@
 #########################
-# BUSINESS LOGIC FLAWS
+# BUSINESS LOGIC FLAWS ASVS Chapt 11 Business Logic 11.1 BL Security / Anti-Automation in Flow, Appropriate Limits
+# Attacks: Parameter Manipulation, Workflow Manipulation, Abusing Limitations
 #########################
+# Let us move to module 10/start to work (WebApplication1 folder is not used anymore for some reason)
+cd 10/start/
+dotnet run   # It should build and run, Identity db has been moved to Globomantics.Survey.db for some reason
+
+#####################
+# BUSINESS LOGIC VALIDATION
+####################
+# Values on a Range, Model Level Validation Taking Multiple fields in Account
+############
+# See new endpoints in SurveyController.cs
+# Go to HTTPS 7236 port (HSTS has been put back in place, we did not deactivate it)
+# Go to Survey/Step2/8f8afc29-228d-4508-9f7a-7d17c4ae9000     # Careful this is another id, with flag isRange=1 to go to View RangeSurvey
+# Put 999 (out of range) using Fiddler (you can't type it because there is the slider, the textfield is for comment), there is no client side nor backend validation
+# In ViewModels>RangeResponseViewModel.cs add to RangeValue
+[Range(1,10)] 
+# In Controllers>SurveyController.cs add ModelValidation at beginning of HttpPost/CompleteRangeSurvey (Line 130)
+if (!ModelState.IsValid) { return View("RangeSurvey", id); }
+# Try again to check validation works
+
+# Now we create a validation based on multiple values, we check if score < 5 then comment is mandatory
+# ViewModels > RangeResponseViewModel.cs inherit
+public class RangeResponseViewModel : IValidatableObject
+# Implement Validate method (you can copy from 11/end for some reason)
+ public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+  {
+      if (RangeValue < 5 && (Comment == null || Comment.Length == 0))
+      {
+          yield return new ValidationResult("Please add a comment for scores below 5");
+      }
+  }
+# Re run and try < 5 without comment, validation kicks in
+
+#######################
+# PROTECTING BUSINESS LOGIC FLOWS
+#######################
+
+
+
+
+
+
+
