@@ -11,6 +11,14 @@
 # Check folder permission where uploads are stored
 ##########################
 
+#####################
+# PREVENT LARGE FILE UPLOAD
+#######################
+# Go to 11/start, do dotnet run, should compile straight away
+# Login Admin@globomantics.com/Admin@globomantics.com
+# Browse to /admin/FileUpload
+
+
 docker run -d --publish 3310:3310 clamav/clamav:latest
 
 dotnet add package nClam
