@@ -47,6 +47,7 @@ else
 # SERVER SIDE CHECK FOR BYPASS
 ##########
 # Run end/6 (only) locally in visual studio code, do a Register, Start Fiddler, Use Rules > Automatic Breakpoints > Before Request, Put in Code Breakpoint at Register.cshtml.cs line 109 (check isModelValid), Use Fiddler to intercept form and put invalid data (with HTML)in form, verify that serverside isModel check prevents hack. (debug and at breakpoint inspect ModelState > FirstName
+# For Fiddler to work, activate Tools>Options>HTTPS>Decrypt HTTS Traffic>For Browser Only, then everytime you run Fiddler, refresh the web page so the browser picks up the self-signed Certificate injected by Fiddler (in Chrome open Advanced and use the link a the Bottom "Proceed to compromised site")
 ###############
 
 ###############
