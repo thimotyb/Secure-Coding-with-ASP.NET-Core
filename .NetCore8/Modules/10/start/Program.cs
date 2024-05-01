@@ -6,6 +6,9 @@ using Globomantics.Survey.Services;
 using Globomantics.Survey.Areas.Identity.Data;
 using Microsoft.Net.Http.Headers;
 using System.Net;
+using Microsoft.AspNetCore.RateLimiting; 
+using System.Threading.RateLimiting;
+using AspNetCoreRateLimit;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
@@ -82,6 +85,25 @@ builder.Services.Configure<IdentityOptions>(options =>
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddTransient<GlobomanticsApiService>();
 
+builder.Services.AddMemoryCache();
+builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+builder.Services.AddInMemoryRateLimiting();
+
+builder.Services.Configure<ClientRateLimitOptions>(options =>
+{
+    options.EnableEndpointRateLimiting = true;
+    options.GeneralRules = new List<RateLimitRule>
+    {
+        new RateLimitRule
+        {
+            QuotaExceededResponse = new QuotaExceededResponse{Content = "Please only submit responses one time!"},
+            Endpoint = "POST:/Survey/RangeSurvey/*",
+            Period = "5m",
+            Limit = 1,
+        }
+    };
+});
+
 builder.Services.AddSession(options =>
 {
     options.Cookie.HttpOnly = true;
@@ -157,6 +179,8 @@ app.Use(async (context, next) =>
     context.Response.Headers[HeaderNames.Expires] = "0";
     await next();
 });
+
+app.UseClientRateLimiting();
 
 app.UseAuthentication();;
 app.UseAuthorization();

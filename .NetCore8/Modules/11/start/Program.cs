@@ -8,6 +8,7 @@ using Microsoft.Net.Http.Headers;
 using System.Net;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
@@ -83,6 +84,7 @@ builder.Services.Configure<IdentityOptions>(options =>
 
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddTransient<GlobomanticsApiService>();
+builder.Services.AddTransient<FileValidationService>();
 
 builder.Services.AddSession(options =>
 {
@@ -130,6 +132,11 @@ else
         options.HttpsPort = 7236;
     });
 }
+
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = Convert.ToInt64(builder.Configuration["MaxFileSize"]);
+});
 
 builder.Services.AddRateLimiter(_ => _
     .AddFixedWindowLimiter(policyName: "surveyRateLimiter", options =>

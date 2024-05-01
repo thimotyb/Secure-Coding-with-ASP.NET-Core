@@ -17,13 +17,18 @@ namespace Globomantics.Survey.Areas.Admin.Controllers
             HttpClient client = new HttpClient();
 
             HttpResponseMessage response = await client.GetAsync(fileUrl);
+            
+            Console.WriteLine("****"+response);
 
             string responseContent = "";
 
             if (response.IsSuccessStatusCode)
             {
                 responseContent = await response.Content.ReadAsStringAsync();
+                
             }
+
+            Console.WriteLine("****"+responseContent);
 
             return View("DisplayFile", responseContent); 
         }

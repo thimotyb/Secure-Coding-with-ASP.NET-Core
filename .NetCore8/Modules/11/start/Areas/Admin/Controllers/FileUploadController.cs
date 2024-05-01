@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
+using nClam;
+using Globomantics.Survey.Services;
 
 namespace Globomantics.Survey.Areas.Admin.Controllers
 {
@@ -7,12 +9,21 @@ namespace Globomantics.Survey.Areas.Admin.Controllers
     public class FileUploadController : Controller
     {
         private readonly IConfiguration Configuration;
-        
+        private readonly long MaxFileSizeBytes = 0;
+        private readonly string AntiVirusHost = ""; //(in fields)
+        private readonly int AntiVirusPort = 0;
+        private readonly FileValidationService _fileValidationService; // as field
 
-        public FileUploadController(IConfiguration configuration)
+        public FileUploadController(IConfiguration configuration,
+            FileValidationService fileValidationService)
         {
             Configuration = configuration;
+            _fileValidationService = fileValidationService;
+            MaxFileSizeBytes = Convert.ToInt64(Configuration["MaxFileSize"]);
+            AntiVirusHost = Configuration["AntiVirus:Host"];
+            AntiVirusPort = Convert.ToInt32(Configuration["AntiVirus:Port"]);
         }
+
         public IActionResult Index()
         {
             return View();
@@ -30,6 +41,33 @@ namespace Globomantics.Survey.Areas.Admin.Controllers
                 return View("index");  
             }
 
+            if (uploadFile.Length > MaxFileSizeBytes)
+                {
+                    ModelState.AddModelError("File", string.Format("The file is too large. It cannot be above {0} bytes", MaxFileSizeBytes));
+                    return View("Index");    
+                }
+
+            if (!_fileValidationService.IsValid(uploadFile))
+            {
+                ModelState.AddModelError("File", string.Format("File type is invalid"));
+                return View("Index"); 
+            }
+
+            var scanResult = await VirusScan(uploadFile);
+
+            switch (scanResult.Result)  
+            {  
+                case ClamScanResults.Clean:  
+                    await SaveFile(uploadFile);
+                    break;
+                case ClamScanResults.VirusDetected:  
+                    ModelState.AddModelError("File", "The file contains a virus!");
+                    break;  
+                default:  
+                    ModelState.AddModelError("File", "An error was encountered while scanning the file");
+                    break;  
+            }  
+
             await SaveFile(uploadFile);
 
             return View("index");  
@@ -45,6 +83,17 @@ namespace Globomantics.Survey.Areas.Admin.Controllers
             {
                 await uploadFile.CopyToAsync(stream);
             }            
+        }
+
+             private async Task<ClamScanResult> VirusScan(IFormFile uploadFile)
+        {
+            var clam = new ClamClient(AntiVirusHost, AntiVirusPort);
+
+            var memoryStream = new MemoryStream();  
+            uploadFile.OpenReadStream().CopyTo(memoryStream);  
+            byte[] fileBytes = memoryStream.ToArray(); 
+
+            return await clam.SendAndScanFileAsync(fileBytes); 
         }
     }
 }

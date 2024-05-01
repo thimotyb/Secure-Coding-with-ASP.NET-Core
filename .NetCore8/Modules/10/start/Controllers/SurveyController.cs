@@ -38,13 +38,18 @@ namespace Globomantics.Survey.Controllers
                     return BadRequest("Invalid domain");
                 }
             }
-
+            HttpContext.Session.CompletedStep(id, 1);
             return Redirect("/Survey/Step2/" + id);
         }
 
         [HttpGet("Survey/Step2/{Id:guid}")]
         public ActionResult TakeSurvey(Guid id)
         {
+            if (!HttpContext.Session.CanAccessStep(id, 2))
+            {
+                return Redirect("/Survey/Step1/" + id);
+            }
+
             CustomerSurvey? customerSurvey = _globomanticsSurveyDbContext.CustomerSurveys
                 .Include(x => x.Questions).FirstOrDefault(x => x.Id == id);
 
@@ -127,6 +132,8 @@ namespace Globomantics.Survey.Controllers
         [HttpPost("Survey/RangeSurvey/{Id:guid}")]
         public async Task<ActionResult> CompleteRangeSurvey(Guid id, RangeResponseViewModel rangeResponseViewModel)
         {
+            if (!ModelState.IsValid) { return View("RangeSurvey", id); }
+
             CustomerSurvey? customerSurvey = _globomanticsSurveyDbContext.CustomerSurveys
                 .Include(x => x.Questions).FirstOrDefault(x => x.Id == id);
 
