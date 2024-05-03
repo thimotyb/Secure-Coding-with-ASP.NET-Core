@@ -1,2 +1,6 @@
+#####################
+# HARDENING CONFIGURATION [04:47:51]
+######################
+
 dotnet publish --configuration Release
 dotnet publish --configuration Release /p:DebugType=None /p:DebugSymbols=false
