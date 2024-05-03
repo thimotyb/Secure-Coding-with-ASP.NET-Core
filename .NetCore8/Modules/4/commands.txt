@@ -1,6 +1,6 @@
 ##############
 ## COOKIES ASVS 3.4.0
-#############
+############# Stay on 3/start to add these
 # Add memCache in Program.cs + sessions
 #builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddDistributedMemoryCache();
