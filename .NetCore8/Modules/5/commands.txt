@@ -74,7 +74,7 @@ dotnet-ef database update --context IdentityDbContext
 # in Areas>Admin>Views > _ViewImports.cshtml add: (take it from 5/end)
 @using Microsoft.AspNetCore.Authorization
 @inject IAuthorizationService AuthorizationService
-# In Program.cs activate Roles and RolesManager
+# In Program.cs activate Roles and RolesManager at line 18
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddRoles<IdentityRole>()
     .AddRoleManager<RoleManager<IdentityRole>>().AddEntityFrameworkStores<IdentityDbContext>();
