@@ -65,7 +65,8 @@ using Microsoft.AspNetCore.Identity.UI.Services;
     [Authorize]
     [EnforceStepUp] 
 #    [Area("Admin")]
-# Run, login with user with 2fa enabled, and go to Admin/Surveys, select View Responses it now asks Authenticator
+# If yo do not have a user with 2fa, register a new user, complete devie 2fa registration, until you see the recovery codes
+# Run, **login with user with 2fa enabled**, and go to Admin/Surveys, select View Responses it now asks Authenticator
 # If refresh the page, since we deleted the cookie that flags authentication in EnforceStepUpAttributes.cs, it has to be redone
 
 ################
