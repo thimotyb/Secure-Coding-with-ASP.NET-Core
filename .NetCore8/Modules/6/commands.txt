@@ -1,5 +1,5 @@
 ###################
-# SECURING INPUT OUTPUT
+# SECURING INPUT OUTPUT [01:36:00]
 # ASVS 5 : VALIDATION SANITIZATION ENCODING
 # 5.1 INPUT VALIDATION
 # 5.2 SANITIZATION/SANDBOXING
@@ -8,7 +8,9 @@
 ###################
 
 ######## INPUT VALIDATION 5.1.4 ASVS (DATA TYPE BINDING + 5.1.3 REGEX VALIDATION)
-# UserController.cs, line 30, gets Guid type as parameter that's ok, try changing as string
+cd /workspace/Secure-Coding-with-ASP.NET-Core/.NetCore8/Modules/6/start/WebApplication1
+dotnet run
+# Areas/Admin/Controllers/UserController.cs, line 30, gets Guid type as parameter that's ok, try changing as string
 # Show that this exposes the call to alter the URL adding some <br> at the end, it gets an exception for line 33 because # # of null, we can't use invalid data to proceed in the code
 
 # Areas > Identity > Pages > Account > Register.cshtml.cs Line 73, property First Name
