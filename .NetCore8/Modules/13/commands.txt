@@ -88,12 +88,46 @@ dotnet run
 # Take API gitpod address, e.g. https://7070-thimotyb-securecodingwi-bq2emtlu85v.ws-eu114.gitpod.io/
 # In start/WebApp/Controllers/ApiDataController.cs replace localhost:7070 with gitpod hostname
 # Replace localhost:7070 also in wwwroot/js/api.js at line 28 and 38
+# # In Views>Shared>_Layout.cshtml, if you do not have correct integrity check disable it for jquery, drop the integrity attribute
+#    <script src="~/lib/jquery/dist/jquery.min.js"
+#        integrity="sha384-I9nvsY534/cx2CBx9qnDDuNkP4tBw4Va7eW8+2CXSaiPmfhB42fq032++kvT8woz" crossorigin="anonymous"></script>
+# CHECK SECURITY IN PLACE, IF USE GITPOD PROBLEMS BECAUSE OF CROSS-SITE INVOCATION
+
+# Navigate to <gitpodhost>:7236/apidata
+# Open INspect tool, go to Sources, open js/api.js set a breakpoint on line 6 to see what javascript does
+# In Console, several errors, first because of CSP, then because of CORS
+
+# In Program.cs of WebApp, line 195, relax CSP to allow cross-site script invokation, delete 'connect-src 'self';' and default-src 'none';
+#  context.Response.Headers[HeaderNames.ContentSecurityPolicy] = 
+        "default-src 'none'; script-src 'self'; connect-src 'self'; img-src 'self'; style-src 'self'; frame-ancestors 'self'; form-action 'self';";
+# In Program.cs of WebApp, disable strict CORS by commenting  context.Response.Headers.Add("Referrer-Policy", "strict-origin-when-cross-origin");
+# In Program.cs of WebAPI, set CORS change to Allow from AnyOrigin without credentials
+builder.Services.AddCors(options => 
+    options.AddPolicy(AllowAllHostsPolicy, policy =>
+        {
+            policy.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+                
+        }));
 # In another terminal, run webapp
 cd /workspace/Secure-Coding-with-ASP.NET-Core/.NetCore8/Modules/13/start/WebApp
 dotnet run
 # Navigate to <gitpodhost>:7236/apidata
 # Open INspect tool, go to Sources, open js/api.js set a breakpoint on line 6 to see what javascript does
+# Go on with debugger, see that token is released and the API is invoked and returns a json with number of surveys
 
-
+############à
+# CORS
+############àà
+builder.Services.AddCors(options => 
+    options.AddPolicy(AllowAllHostsPolicy, policy =>
+        {
+            policy.WithOringins("*")
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials();
+                
+        }));
 
 
