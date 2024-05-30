@@ -51,6 +51,7 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
 # ASVS 14.5 VALIDATE REQUEST HEADERS
 # Accept only used HTTP Methods e.g. in our case just GET/POST
 #####################
+# Writing middleware: https://learn.microsoft.com/en-us/aspnet/core/fundamentals/middleware/write?view=aspnetcore-8.0
 # Create Middleware folder at root in project (same lvl as Services, Models, Controllers...)
 # Copy/Paste from 12/end HttpMethodValidationMiddleware.cs and comment code
 # Add the static method to middleware pipeline in Program.cs
@@ -59,9 +60,45 @@ using Globomantics.Survey.Middleware;
 app.UseHttpMethodValidation();
 # In Fiddler intercept a request (it HTTPS, open Fiddler check that Tool>Option>HTTPS>Decrypt HTTPS Traffic is on for browser), reload page, in browser chose Advanced and Accept anyaway connection to accept fiddler's cert), set Rules>Automatic Breakpoints>Before Request, click on Request intercepted, go to RAW Mode and change the request  to PUT, click Run to Completion to see exception from the middleware
 
-
-
-
+#############################
+# ASVS 14.4 SECURITY HEADERS IN WEB RESPONSES
+##############à
+# We already have in Program.cs:
+# - Cookies (not mentioned in section)
+# - HSTS 14.4.5
+# - Cache Control
+# Let's add:
+# - CORS Control = strict origin - this is default in new browser, bu just in case 
+#       https://developer.mozilla.org/en-US/docs/Glossary/CORS; 
+#       https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
+#       https://developer.chrome.com/blog/referrer-policy-new-chrome-default
+# - COntentType = nosniff - avoid browser tries to detect content-type and automatically use a plug-in or execute something to open it
+# - Content Security Policy (CSP) - here we limit the type of contents provided to limit possibility of injection of unintended objects
+# https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
+#############################
+# Add in program.cs line 181 (overwrite part with no-cache control)
+app.Use(async (context, next) =>
+{
+    context.Response.GetTypedHeaders().CacheControl =
+        new Microsoft.Net.Http.Headers.CacheControlHeaderValue()
+        {
+            NoCache = true,
+            NoStore = true
+        };
+    context.Response.Headers[HeaderNames.Pragma] = "no-cache";
+    context.Response.Headers[HeaderNames.Expires] = "0";
+    context.Response.Headers.Add("Referrer-Policy", "strict-origin-when-cross-origin");
+    context.Response.Headers[HeaderNames.ContentType] = "nosniff";
+    context.Response.Headers[HeaderNames.ContentSecurityPolicy] = 
+        "default-src 'none'; script-src 'self'; connect-src 'self'; img-src 'self'; style-src 'self'; frame-ancestors 'self'; form-action 'self';";
+    await next();
+});
+# Apply the policy, run, inspeact header in Browser Inspect>Network>Click on a Request. The page looks broken, check errors in Console in lines 16,48,49, it is due to CSP, that does not allow in-line styles in the tags (e.g. <img style="width:50px"/>)
+# To fix it, upload site.css from end/wwwroot/css into start then change in start/Views/Shared/_Layout.cshtml, line 16,48,49. We use the class from file css instead of inline style
+<img class="globoImage" src="/img/globomantics-logo-bug-black.png" />
+...
+<div class="container globoFooter">
+ <img class="globoImageFooter" src="/img/globomantics-logo-black.png" />
 
 
 
