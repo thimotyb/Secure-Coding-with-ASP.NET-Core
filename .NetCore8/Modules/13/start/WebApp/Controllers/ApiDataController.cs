@@ -5,7 +5,7 @@ namespace Globomantics.Survey.Controllers
 {
     public class ApiDataController : Controller
     {
-        private const string BaseApiUrl = @"https://localhost:7070/";
+        private const string BaseApiUrl = @"https://7070-thimotyb-securecodingwi-bq2emtlu85v.ws-eu114.gitpod.io/";
         private const string ApiTokenPath = BaseApiUrl + @"api/token";
 
         public class ApiLoginModel

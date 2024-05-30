@@ -25,7 +25,7 @@ function login()
     }
 
     const xhr = new XMLHttpRequest()
-    xhr.open('POST', 'https://localhost:7070/login', false)
+    xhr.open('POST', 'https://7070-thimotyb-securecodingwi-bq2emtlu85v.ws-eu114.gitpod.io/login', false)
     xhr.setRequestHeader("Content-type", "application/json")
     xhr.send(JSON.stringify(params))
 
@@ -35,7 +35,7 @@ function login()
 function getData(bearerToken)
 {
     const xhr = new XMLHttpRequest()
-    xhr.open('GET', 'https://localhost:7070/SurveyStats', false)
+    xhr.open('GET', 'https://7070-thimotyb-securecodingwi-bq2emtlu85v.ws-eu114.gitpod.io/SurveyStats', false)
     xhr.setRequestHeader("Content-type", "application/json")
     xhr.setRequestHeader('Authorization', 'Bearer ' + bearerToken);
     xhr.send();

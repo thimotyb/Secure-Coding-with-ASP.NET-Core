@@ -192,7 +192,7 @@ app.Use(async (context, next) =>
     context.Response.Headers.Add("Referrer-Policy", "strict-origin-when-cross-origin");
     context.Response.Headers[HeaderNames.ContentType] = "nosniff";
     context.Response.Headers[HeaderNames.ContentSecurityPolicy] = 
-        "default-src 'none'; script-src 'self'; connect-src 'self'; img-src 'self'; style-src 'self'; frame-ancestors 'self'; form-action 'self';";
+        "script-src 'self'; img-src 'self'; style-src 'self'; frame-ancestors 'self'; form-action 'self';";
     await next();
 });
 
