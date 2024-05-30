@@ -65,6 +65,8 @@ _logger.LogWarning("Invalid login attempt: {LoginData}.", Input);
 # In 8/end Admin>Controllers>UserController.cs show how logger is added in injection (field+contructor) and then add
 # all elevation of privilege events (Set/Unset ADmin) (e.g. line 54)
 
+# Also in Login.cshtml.cs when user gets logout, important to set a _logger.LogWarning("User locked out")
+
 ########################
 # LOGGING INPUT VALIDATION
 ########################
