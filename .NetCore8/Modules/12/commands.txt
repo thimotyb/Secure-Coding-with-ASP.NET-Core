@@ -27,6 +27,42 @@ dotnet publish --configuration Release /p:DebugType=None /p:DebugSymbols=false
     <DebugSymbols>False</DebugSymbols>
     <DebugType>None</DebugType>
   </PropertyGroup>
+# Delete again release, publish without options 
+dotnet publish --configuration Release
+# This time debug info is not there and cannot accidentally be deployed
+
+###########################
+# ASVS 14.3 HTTP Response protection (don't expose component version / server header)
+###########################
+# In bin/Release/net8.0/publish/web.config we can add FOR IIS
+<security>
+ <requestFiltering removeServerHeader="true" />
+</security>
+# For Kestrel, this can be done in code
+# Load a page and look in Browser Code Inspect > Network > Click on a Request > Headers in Response Headers Server: Kestrel
+# In Program.cs, add a Kestrel configuration (around line 15)
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.AddServerHeader = false;
+});
+# Rebuild, check header again Server is gone
+
+#####################
+# ASVS 14.5 VALIDATE REQUEST HEADERS
+# Accept only used HTTP Methods e.g. in our case just GET/POST
+#####################
+# Create Middleware folder at root in project (same lvl as Services, Models, Controllers...)
+# Copy/Paste from 12/end HttpMethodValidationMiddleware.cs and comment code
+# Add the static method to middleware pipeline in Program.cs
+using Globomantics.Survey.Middleware;
+# after app.UseStaticFiles()
+app.UseHttpMethodValidation();
+# In Fiddler intercept a request (it HTTPS, open Fiddler check that Tool>Option>HTTPS>Decrypt HTTPS Traffic is on for browser), reload page, in browser chose Advanced and Accept anyaway connection to accept fiddler's cert), set Rules>Automatic Breakpoints>Before Request, click on Request intercepted, go to RAW Mode and change the request  to PUT, click Run to Completion to see exception from the middleware
+
+
+
+
+
 
 
 
