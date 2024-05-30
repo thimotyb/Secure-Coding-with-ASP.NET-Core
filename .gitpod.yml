@@ -18,3 +18,6 @@ ports:
     - name: Frontend Application
       port: 7236
       protocol: https
+    - name: API Application
+      port: 7070
+      protocol: https
