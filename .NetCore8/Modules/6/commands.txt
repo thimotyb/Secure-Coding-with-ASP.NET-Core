@@ -138,7 +138,8 @@ return Redirect("Survey/SurveyCompleteMessageAdo/" + id);
 ########################
 # Compare in 6/start with 6/end in Areas>Admin>Controllers>SurveyController copy over method SurveyReport
 # in  6/end in Areas>Admin>Controllers>SurveyController place back unsecure code of 6/start, comment the secure part
-# chmod ugo+x runreport.sh in 6/end (to execute it)
+# chmod ugo+x runreport.sh in 6/end/WebApplication1 (to execute it)
+# chmod ugo+x /workspace/Secure-Coding-with-ASP.NET-Core/.NetCore8/Modules/6/end/WebApplication1/runreport.sh
 [HttpPost("Admin/SurveyReport")]
 public IActionResult SurveyReport([FromForm] string surveyName)
 {
@@ -156,7 +157,7 @@ public IActionResult SurveyReport([FromForm] string surveyName)
 }
 # You can run from 6/end dotnet run , but copy GloboSurveyUser.cs in Areas>Admin>Identity>Data from 7/start/Aread/Admin/Data/ if not there
 # Login as Admin@globomantics.com, go to /Admin/Surveys
-# Press "Print Report" button, but first use Fiddler to intercept request (Rules>Automatic Breakpoints>Before Requests), append "& mkdir xxx" as an OS injection example
+# Press "Print Report" button (if unchallenged it prints "Ciao, Staff!" in console), but first use Fiddler to intercept request (Rules>Automatic Breakpoints>Before Requests), go to WebForms for Request, for param SurveyName append "$(mkdir xxx)" as an OS injection example
 # You can use Fiddler also with codeshare, just allow unsecure certificate (need Options > HTTPS > Caputre HTTPS connect, Decrypt HTTPS traffic from browsers only
 
 ################
