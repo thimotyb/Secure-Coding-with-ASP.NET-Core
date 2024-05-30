@@ -12,9 +12,21 @@
 # ASVS promotes bearer tokens and discontinues API keys (fixed value as password)
 #######################################
 # CORS AND APIs
-#
-#
+# SAME ORIGIN POLICY
+#  User ---> Browser ---> WebApp (JS) https//example.com ---> API (hosted on same site as web app) example.com/api   
+#  User ---> Browser ---> WebApp (JS) https//another.example.com ---> API (hosted on same site as web app) example.com/api  --> another.example.com is NOT SAME ORIGIN, when response comes back from API the browser that displays web app will not allow the page to access the data in the response
+# CORS allows to specify which origins are allowed (eg. include another.example.com as possible origin of the API call) Access-Control-Allow-Origin
+# Access-Control-Allow-Credential allows cookies to be attached to request
 ########################################
+
+#####################
+# AUTHENTICATED API WITH BEARER TOKEN
+########################
+# There are 2 projects here, the WebApi folder contains the API, the WebApp contains the GUI Web App Frontend
+cd /workspace/Secure-Coding-with-ASP.NET-Core/.NetCore8/Modules/13/start/WebApi
+
+
+
 
 
 
