@@ -1,1 +1,21 @@
+#######################################
+# API SECURITY [05:00:54]
+# - Bearer Tokens
+# - API specific headers
+# - API misconfig
+# ASVS 13
+# 13.1 Generic Web Service Security
+# 13.2 REST services
+# 13.3 SOAP Web Services
+# 14.5.3 CORS Headers
+# 13.5 Token based session management
+# ASVS promotes bearer tokens and discontinues API keys (fixed value as password)
+#######################################
+# CORS AND APIs
+#
+#
+########################################
+
+
+
 dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer
