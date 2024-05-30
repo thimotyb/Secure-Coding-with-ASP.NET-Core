@@ -77,6 +77,14 @@ using Microsoft.AspNetCore.Authorization;
 # Paste TokenController.cs from end/WebApi/ClobomanticsApi/Controllers into corresponding location in start
 # Paste the LoginModel this contorller is using from end/WebApi/ClobomanticsApi/Models/LoginModel.cs in corresponding location in start
 # We are going to use external browser to gitpod service, so we need to replace localhost with current gitpod instance hostname
+# API has to be exposed in https from gitpod, add to gitpod.yaml in ports
+    - name: API Application
+      port: 7070
+      protocol: https
+# Open a new terminal, go to 
+cd /workspace/Secure-Coding-with-ASP.NET-Core/.NetCore8/Modules/13/start/WebApi/GlobomanticsApi
+dotnet run
+# make public port 7070 in gitpod
 
 
 
