@@ -23,11 +23,60 @@
 # AUTHENTICATED API WITH BEARER TOKEN
 ########################
 # There are 2 projects here, the WebApi folder contains the API, the WebApp contains the GUI Web App Frontend
-cd /workspace/Secure-Coding-with-ASP.NET-Core/.NetCore8/Modules/13/start/WebApi
-
-
-
-
-
-
+cd /workspace/Secure-Coding-with-ASP.NET-Core/.NetCore8/Modules/13/start/WebApi/GlobomanticsApi
+# Install JWT package
 dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer
+# Configure in Program.cs, add at line 6
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+...
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters()
+        {
+            ValidateAudience = true,
+            ValidateIssuer = true,
+            ValidAudience = builder.Configuration["Authentication:Audience"],
+            ValidIssuer = builder.Configuration["Authentication:Issuer"],
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration["Authentication:SecretKey"]))
+        };
+    });
+# Also add CORS config we will use later (line 20)
+string AllowAllHostsPolicy = "AllowAllHostsPolicy";
+
+builder.Services.AddCors(options => 
+    options.AddPolicy(AllowAllHostsPolicy, policy =>
+        {
+            policy.WithOrigins("https://localhost:7236")
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials();
+        }));
+# Use the 2 middlewares
+app.UseCors(AllowAllHostsPolicy);
+...
+app.UseAuthentication();
+app.UseAuthorization();
+# Set in appsettings.json the config values used to configure token
+"Authentication": {
+    "SecretKey": "2JxAf79DPsHhyPDX7ZEx5mcRE9xNNg5Z5vx9wsc2hwBc22WfmBvAYynMLZsDMVHW(DO NOT USE THIS KEY!!)",
+    "Issuer": "GlobomanticsApi",
+    "Audience": "survey.Globomantics",
+    "Subject": "GloboAccessToken"
+  }
+# In Controllers>SurveyStatsController.cs add Authorize decoration
+using Microsoft.AspNetCore.Authorization;
+...
+[Authorize]
+[HttpGet.....]
+
+# To get a Token we need an Authorization Service (KeyCloak, OKTA...), here we will create a Token Controller to simulate this
+# Paste TokenController.cs from end/WebApi/ClobomanticsApi/Controllers into corresponding location in start
+# Paste the LoginModel this contorller is using from end/WebApi/ClobomanticsApi/Models/LoginModel.cs in corresponding location in start
+# We are going to use external browser to gitpod service, so we need to replace localhost with current gitpod instance hostname
+
+
+
