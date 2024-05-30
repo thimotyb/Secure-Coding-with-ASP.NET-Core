@@ -9,8 +9,16 @@ using System.Net;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Http.Features;
+using Globomantics.Survey.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.AddServerHeader = false;
+});
+
+
 builder.Logging.ClearProviders();
 builder.Logging.AddSimpleConsole(options =>
 {
@@ -166,7 +174,7 @@ app.UseHsts();
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
-
+app.UseHttpMethodValidation();
 app.UseRouting();
 app.UseRateLimiter();
 
@@ -180,6 +188,10 @@ app.Use(async (context, next) =>
         };
     context.Response.Headers[HeaderNames.Pragma] = "no-cache";
     context.Response.Headers[HeaderNames.Expires] = "0";
+    context.Response.Headers.Add("Referrer-Policy", "strict-origin-when-cross-origin");
+    context.Response.Headers[HeaderNames.ContentType] = "nosniff";
+    context.Response.Headers[HeaderNames.ContentSecurityPolicy] = 
+        "default-src 'none'; script-src 'self'; connect-src 'self'; img-src 'self'; style-src 'self'; frame-ancestors 'self'; form-action 'self';";
     await next();
 });
 

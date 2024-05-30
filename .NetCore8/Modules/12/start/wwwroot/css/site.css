@@ -39,3 +39,17 @@ body {
 .popup-body.active {
   visibility:visible;
 }
+
+.globoImage{
+  width:50px
+}
+
+.globoImageFooter{
+  width:300px
+}
+
+.globoFooter{
+  margin: auto;
+  width: 50%;
+  padding: 10px;
+}

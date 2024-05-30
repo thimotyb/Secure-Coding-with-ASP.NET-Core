@@ -5,6 +5,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>44c86647-1d55-4d9e-9058-ae8848fb4662</UserSecretsId>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+  </PropertyGroup>
   <ItemGroup>
     <Folder Include="Areas\Admin\Data\" />
     <Folder Include="Areas\Admin\Models\" />
