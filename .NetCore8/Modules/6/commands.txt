@@ -12,6 +12,13 @@ cd /workspace/Secure-Coding-with-ASP.NET-Core/.NetCore8/Modules/6/start/WebAppli
 dotnet run
 # Areas/Admin/Controllers/UserController.cs, line 30, gets Guid type as parameter that's ok, try changing as string
 # Show that this exposes the call to alter the URL adding some <br> at the end, it gets an exception for line 33 because # # of null, we can't use invalid data to proceed in the code
+# Login Admin@globomantics.com/Admin@globomantics.com, Call /Admin/User/, choose use Admin, ViewUser is using GUID, alter this GUID
+# To change to String:
+       [HttpGet("Admin/ViewUser/{Id}")]
+        public async Task<IActionResult> ViewUser(string id)
+# You should not use the null check (comment it) to do validation:
+            if (user == null)
+                return NotFound($"User ID not found.");
 
 # Areas > Identity > Pages > Account > Register.cshtml.cs Line 73, property First Name
 # https://learn.microsoft.com/en-us/aspnet/core/security/cross-site-scripting?view=aspnetcore-8.0#html-encoding-using-razor
@@ -48,8 +55,9 @@ else
 ########
 # SERVER SIDE CHECK FOR BYPASS
 ##########
-# Run end/6 (only) locally in visual studio code, do a Register, Start Fiddler, Use Rules > Automatic Breakpoints > Before Request, Put in Code Breakpoint at Register.cshtml.cs line 109 (check isModelValid), Use Fiddler to intercept form and put invalid data (with HTML)in form, verify that serverside isModel check prevents hack. (debug and at breakpoint inspect ModelState > FirstName
+# Run end/6 (only) locally in visual studio code, do a Register, Start Fiddler, Use Rules > Automatic Breakpoints > Before Request, Put in Code Breakpoint at Register.cshtml.cs line 109 (check isModelValid), Use Fiddler to intercept the Register form and put invalid data (with HTML)in form, verify that serverside isModel check prevents hack. (debug and at breakpoint inspect ModelState > FirstName
 # For Fiddler to work, activate Tools>Options>HTTPS>Decrypt HTTS Traffic>For Browser Only, then everytime you run Fiddler, refresh the web page so the browser picks up the self-signed Certificate injected by Fiddler (in Chrome open Advanced and use the link a the Bottom "Proceed to compromised site")
+# The check serverside is in the Areas>Identity>Pages>Account>Register.cshtml.cs > OnPostAsync > if (ModelState.IsValid)
 ###############
 
 ###############
@@ -104,17 +112,26 @@ string htmlMessage = EmailBody
                     //command.Parameters.Add(new SqliteParameter("@id", id.ToUpper()));
 # Add Views>Survey>SurveyCompleteMessage.cshtml from 6/start
 # Copy GloboSurvey.db from 6/end into project (you need an additional line in table CustomerSurvey to prove injection
-# Replace CompleteSurvey Redirect line 86 to Ado to use the method with improper injectable statement
+***********************
+*IF YOU NEED TO INSERT A NEW LINE IN GLOBOSURVEY TO DEMO INJECTION:
+* # Explore with SQL Lite Extension
+* # Open Command Palette CTRL+SHIFT+P type SQLLite:Open Database, a new section bottom left # opens to explore DB
+* # In Command Pallette choose SQLLite:New Query and run this query:
+* -- SQLite
+* insert into CustomerSurveys VALUES ('8F8AFC29-228D-4508-9F7A-7D17C4AE9901','Staff Survey - Wired Brain Coffee','You are a wired brain coffee addict, we love you!')
+* # Right click and choose Run Query in the popupmenu
+***********************
+# In SeruveyController.cs, Replace CompleteSurvey Redirect line 86 to Ado to use the method with improper injectable statement
 return Redirect("Survey/SurveyCompleteMessageAdo/" + id);
 # Replace the correct with query parameters, with the injectable one, 
 # Login, DO NOT go to /Survey/TakeSurvey/8f8afc29-228d-4508-9f7a-7d17c4ae9900, try to perform a Survey, (won't work before of UNIQUE constraint)
 # Go directly to Survey/SurveyCompleteMessageAdo/8f8afc29-228d-4508-9f7a-7d17c4ae9900
 # then altering URL in CompleteMessageAdo like this:
  Survey/SurveyCompleteMessageAdo/8f8afc29-228d-4508-9f7a-7d17c4ae9900'  <--- add a quote, error, uncovers injection vulnerability
-# SqliteException: ******SQLite Error 1*******: 'unrecognized token: "'8F8AFC29-228D-4508-9F7A-7D17C4AE9900''"'.
+# SqliteException: ******SQLite Error 1*******: 'unrecognized token: "'8F8AFC29-228D-4508-9F7A-7D17C4AE9900''"'. OPEN THE + IN BROWSER; REVEALS QUERY!!
 # Try this:
  Survey/SurveyCompleteMessageAdo/8f8afc29-228d-4508-9f7a-7d17c4ae9900' or 1=1 --
-# You see two lines from the CustomerSurvey table, show tables by using https://sqliteviewer.app/ and loading the GloboSurvey.db table (download from project and upload in page)
+# You see two lines from the CustomerSurvey table, show tables by using https://sqliteviewer.app/ and loading the GloboSurvey.db table (download from project and upload in page) (OR USE SQLLITE VIEWER EXTENSION IF IT WORKS)
 
 ########################
 # OS COMMAND INJECTION ASVS 5.3.8
@@ -125,12 +142,12 @@ return Redirect("Survey/SurveyCompleteMessageAdo/" + id);
 [HttpPost("Admin/SurveyReport")]
 public IActionResult SurveyReport([FromForm] string surveyName)
 {
-    #string cmdText = @"/c C:\ps\RunReport.bat –name " + surveyName;
-    string cmdText = @" --name " + surveyName;   # LINUX VERSION iF YOU USE GITPOD
+    //string cmdText = @"/c C:\ps\RunReport.bat –name " + surveyName;
+    string cmdText = @"" + surveyName;   // LINUX VERSION iF YOU USE GITPOD
 
     var p = new Process();
-    #p.StartInfo.FileName = "cmd.exe";
-    p.StartInfo.FileName = "./runreport.sh"; # LINUX VERSION iF YOU USE GITPOD
+    //p.StartInfo.FileName = "cmd.exe";
+    p.StartInfo.FileName = "./runreport.sh"; // LINUX VERSION iF YOU USE GITPOD
     p.StartInfo.Arguments = cmdText;
     p.Start();
     p.WaitForExit();
