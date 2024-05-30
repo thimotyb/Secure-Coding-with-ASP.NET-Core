@@ -84,7 +84,7 @@ builder.Services.AddControllersWithViews(config =>
 //app.UseHttpsRedirection();
 # Go to /Survey/TakeSurvey/8f8afc29-228d-4508-9f7a-7d17c4ae9900
 # Before submit start in Fiddler do Rules>Automatic Breakpoints>Before Requests
-# Use fiddler to intercept, bump up all surveys ID (last digit 5>) change Answer 1 Less than a year>
+# Use fiddler to intercept, bump up all surveys ID (otherwise they will not be saved) (last digit 5>) change Answer 1 Less than a year> (Add invalid char > at the end of the option)
 # In console you get
 warn: ModelStateValidationFilter[0]
       Input validation failure: Path: /Survey/CompleteSurvey/8f8afc29-228d-4508-9f7a-7d17c4ae9900 Key: questions[0].Answer input: Less than 1 year>
