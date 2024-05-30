@@ -1,6 +1,36 @@
 #####################
-# HARDENING CONFIGURATION [04:47:51]
+# HARDENING CONFIGURATION [04:47:51] - Reduce the attack surface (at server and browser level)
+# ASVS 14: "Configuration"
+# - Build configuration
+# - Request/response configuration
+# 14.2 DEPENDENCY (remove unneeded)
+# 14.3 Unintended Security Disclousre
+# 14.4 HTTP Security Headers (to instruct safe browsing)
+# 14.5 HTTP Request Header Validation
+#  .NET Core Environments help to selectively activate features
 ######################
 
+##############à
+# DEACTIVATE DEBUG INFO IN PROD
+###############
+# Start with module 12, here for some reason Identyt db changed to Globomantics.Survey.db (appsettings.json)
+cd .NetCore8/Modules/12/start/
+# It works on HTTPS, use port 7236, Admin@globomantics.com/Admin@globomantics.com
+# Release the solution with the command
 dotnet publish --configuration Release
+# In  /workspace/Secure-Coding-with-ASP.NET-Core/.NetCore8/Modules/12/start/bin/Release/net8.0/Globomantics.Survey.dll there is still a Globomantics.Survey.pdb with debug info
+# Delete all Release folder to redo publishing with some hardening
 dotnet publish --configuration Release /p:DebugType=None /p:DebugSymbols=false
+# Now there is no debug information that can be accidentally published
+# Configuration in Globomantics.Survey.csproj to make this permanent on Release. Add PropertyGroup at line 8
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+  </PropertyGroup>
+
+
+
+
+
+
+
