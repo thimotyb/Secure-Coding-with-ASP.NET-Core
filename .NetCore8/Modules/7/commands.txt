@@ -1,5 +1,5 @@
 ##############
-# PROTECTING DATA - CRYPTO
+# PROTECTING DATA - CRYPTO [02:15:40]
 # ASVS Chapt6 Cryptography, ASVS Chapt 8 Data Protection, ASVS Chapt9 TLS Communication
 # Microsoft.AspNetCore.DataProtection API https://learn.microsoft.com/en-us/aspnet/core/security/data-protection/introduction?view=aspnetcore-8.0
 ##############
@@ -134,6 +134,9 @@ app.UseHttpsRedirection();
 # Hsts cant be used on loopback/localhost, need to use domainname (add port in gitpod as per conf at the end of this file)
 # Start with https profile (it is defined in launchSettings.json)
 dotnet run --launch-profile https
+
+# Configure certificate in Kestrel
+https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel/endpoints?view=aspnetcore-8.0#configure-https-in-appsettingsjson
 
 ###################
 # TLS CLIENT SIDE (API CALLS)
