@@ -123,10 +123,10 @@ dotnet run
 builder.Services.AddCors(options => 
     options.AddPolicy(AllowAllHostsPolicy, policy =>
         {
-            policy.WithOringins("*")
+            policy.WithOrigins("*")
                 .AllowAnyMethod()
-                .AllowAnyHeader()
-                .AllowCredentials();
+                .AllowAnyHeader();
+                //.AllowCredentials();
                 
         }));
 
