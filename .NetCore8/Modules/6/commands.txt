@@ -21,6 +21,7 @@ dotnet run
                 return NotFound($"User ID not found.");
 
 # Areas > Identity > Pages > Account > Register.cshtml.cs Line 73, property First Name
+# TODOTODO HAI SPORCATO LA START E QUESTO ESEMPIO NON FUNZIONA PERCHE VUOLE IL CAMPO DOB (METTI IL DATABASE VECCHIO GLOBOIDENTITY, COPIANDOLO DA UN MODULO PRECEDENTE DOVE NON C'E' IL CAMPO DOB DATE OF BIRTH AGGIUNTIVO)
 # https://learn.microsoft.com/en-us/aspnet/core/security/cross-site-scripting?view=aspnetcore-8.0#html-encoding-using-razor
 # First Name field in Register form is vulnerable to XSS, register and put Timo<script>alert("XSS here!");</script> in First Name, the HTML gets honored in following pages. Add length limit and regex by decommenting
   [Display(Name = "First name")]
